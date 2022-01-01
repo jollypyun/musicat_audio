@@ -13,7 +13,7 @@ public class Thumbnail {
     @Column(name="thumbnail_no", nullable = false)
     private Long id;
 
-    @ManyToOne(optional = false)
+    @OneToOne(optional = false)
     @JoinColumn(name = "file_no", nullable = false)
     private MetaFile file;
 }

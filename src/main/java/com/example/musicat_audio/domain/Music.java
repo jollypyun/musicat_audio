@@ -14,7 +14,7 @@ public class Music {
     @Column(name = "music_no", nullable = false)
     private Long id;
 
-    @ManyToOne(optional = false)
+    @OneToOne(optional = false)
     @JoinColumn(name = "file_no", nullable = false)
     private MetaFile file;
 
