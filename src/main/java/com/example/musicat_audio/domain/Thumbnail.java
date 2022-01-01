@@ -1,0 +1,19 @@
+package com.example.musicat_audio.domain;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+
+@Getter
+@Entity
+@NoArgsConstructor
+public class Thumbnail {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="thumbnail_no", nullable = false)
+    private Long id;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "file_no", nullable = false)
+    private MetaFile file;
+}
