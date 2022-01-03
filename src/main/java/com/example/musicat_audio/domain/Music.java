@@ -11,25 +11,23 @@ import javax.persistence.*;
 public class Music {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "music_no")
+    @Column(name = "music_no", nullable = false)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "file_no")
+    @OneToOne(optional = false)
+    @JoinColumn(name = "file_no", nullable = false)
     private MetaFile file;
 
-    @OneToOne
-    @JoinColumn(name = "thumbnail_no")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "thumbnail_no", nullable = false)
     private Thumbnail thumbnail;
 
+    @Column(name = "title", nullable = false, length = 100)
     private String title;
 
-    @Column(name="member_no")
+    @Column(name="member_no", nullable = false)
     private int memberNo;
-
-    @Column(name="article_no")
-    private int articleNo;
-
+  
     public Music(MetaFile file, Thumbnail thumbnail, String title, int memberNo, int articleNo) {
         this.file = file;
         this.thumbnail = thumbnail;

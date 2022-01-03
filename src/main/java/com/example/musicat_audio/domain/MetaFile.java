@@ -12,28 +12,33 @@ import java.time.Instant;
 @NoArgsConstructor
 public class MetaFile {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "file_no")
+    @Column(name = "file_no", nullable = false)
     private Long id;
 
-    @Column(name="originalfilename", length = 100)
+    @Column(name="originalfilename", nullable = false, length = 100)
     private String originalFileName;
 
-    @Column(name="systemfilename", length = 100)
+    @Column(name="systemfilename", nullable = false, length = 100)
     private String systemFileName;
 
-    @Column(name="filesize")
+    @Column(name="filesize", nullable = false)
     private Long fileSize;
 
-    @Column(name = "filetype")
+    @Column(name = "filetype", nullable = false, length = 20)
     private String fileType;
 
-    @Column(name = "writedate")
+    @Column(name = "writedate", nullable = false)
     private Instant wirteDate;
 
-    public MetaFile(String originalFileName, String systemFileName, String fileType, Long fileSize) {
+   public MetaFile(String originalFileName, String systemFileName, String fileType, Long fileSize) {
         this.originalFileName = originalFileName;
         this.systemFileName = systemFileName;
         this.fileType = fileType;
+        this.fileSize = fileSize;
+   }
+    public MetaFile(String originalFileName, String systemFileName, Long fileSize) {
+        this.originalFileName = originalFileName;
+        this.systemFileName = systemFileName;
         this.fileSize = fileSize;
     }
 }
