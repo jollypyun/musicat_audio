@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.Instant;
 
-@Getter
 @Entity
+@Getter
 @Table(name="metafile")
 @NoArgsConstructor
 public class MetaFile {
@@ -30,6 +30,12 @@ public class MetaFile {
     @Column(name = "writedate", nullable = false)
     private Instant wirteDate;
 
+   public MetaFile(String originalFileName, String systemFileName, String fileType, Long fileSize) {
+        this.originalFileName = originalFileName;
+        this.systemFileName = systemFileName;
+        this.fileType = fileType;
+        this.fileSize = fileSize;
+   }
     public MetaFile(String originalFileName, String systemFileName, Long fileSize) {
         this.originalFileName = originalFileName;
         this.systemFileName = systemFileName;

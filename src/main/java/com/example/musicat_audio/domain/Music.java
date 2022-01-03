@@ -27,4 +27,12 @@ public class Music {
 
     @Column(name="member_no", nullable = false)
     private int memberNo;
+  
+    public Music(MetaFile file, Thumbnail thumbnail, String title, int memberNo, int articleNo) {
+        this.file = file;
+        this.thumbnail = thumbnail;
+        this.title = title;
+        this.memberNo = memberNo;
+        this.articleNo = articleNo;
+    }
 }

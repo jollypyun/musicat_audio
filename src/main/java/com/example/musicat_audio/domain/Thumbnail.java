@@ -16,4 +16,8 @@ public class Thumbnail {
     @OneToOne(optional = false)
     @JoinColumn(name = "file_no", nullable = false)
     private MetaFile file;
+  
+    public Thumbnail(MetaFile file) {
+        this.file = file;
+    }
 }
