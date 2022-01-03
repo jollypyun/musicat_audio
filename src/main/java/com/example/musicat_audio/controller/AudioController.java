@@ -2,14 +2,18 @@ package com.example.musicat_audio.controller;
 
 import com.example.musicat_audio.domain.MetaFile;
 import com.example.musicat_audio.domain.Music;
+import com.example.musicat_audio.exception.customException.MusicNotFoundException;
 import com.example.musicat_audio.service.MusicService;
 import com.example.musicat_audio.utill.FileManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +26,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/music/")
+@Validated
 public class AudioController {
 
     public static final String AUDIO_PATH = "d:\\temp\\spring_uploaded_files";
@@ -39,7 +44,7 @@ public class AudioController {
 
     @PostMapping(value = "uploadFile")
     public ResponseEntity<String> upload(@RequestParam("audio") MultipartFile file, @RequestParam("image") MultipartFile imagefile, @RequestParam("title") String title,
-                                         @RequestParam("memberNo") int memberNo, @RequestParam("articleNo") int aritlceNo) {
+                                         @RequestParam("memberNo") @Min(6) int memberNo, @RequestParam("articleNo") int aritlceNo) {
         FileManager temp = new FileManager();
         String fileName = "there is no file.";
         try {
@@ -68,8 +73,13 @@ public class AudioController {
     public String findMusic(@PathVariable("id") Long musicId) {
 
         Music music = musicService.findMusic(musicId);
+
+        if(music == null)
+            throw new MusicNotFoundException("there is no music");
+
         return music.getFile().getSystemFileName();
     }
+
     @GetMapping("streaming/{fileName}")
     public Mono<ResponseEntity<byte[]>> streamAudio(@RequestHeader(value = "Range", required = false) String httpRangeList,
                                                     @PathVariable("fileName") String fileName) {
