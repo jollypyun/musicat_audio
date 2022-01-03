@@ -1,13 +1,16 @@
 package com.example.musicat_audio.domain;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.Instant;
 
 @Entity
+@Getter
+@Table(name="metafile")
 @NoArgsConstructor
-public class File {
+public class MetaFile {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "file_no")
     private Long id;
@@ -27,9 +30,10 @@ public class File {
     @Column(name = "writedate")
     private Instant wirteDate;
 
-    public File(String originalFileName, String systemFileName, Long fileSize) {
+    public MetaFile(String originalFileName, String systemFileName, String fileType, Long fileSize) {
         this.originalFileName = originalFileName;
         this.systemFileName = systemFileName;
+        this.fileType = fileType;
         this.fileSize = fileSize;
     }
 }
