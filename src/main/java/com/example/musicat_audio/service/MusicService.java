@@ -21,7 +21,7 @@ public class MusicService {
     }
 
     @Transactional
-    public String saveMusic(MetaFile file, MetaFile imageFile, String title, int memberNo, int articleNo) {
+    public Music saveMusic(MetaFile file, MetaFile imageFile, String title, int memberNo, int articleNo) {
         // 파일 테이블에 저장
         String systemfileName = musicRepository.saveFile(file); // 음악파일 저장
         musicRepository.saveFile(imageFile); // 썸네일 파일 저장
@@ -33,7 +33,8 @@ public class MusicService {
         // music 테이블에 저장
         Music music = new Music(file, thumbnail, title, memberNo, articleNo);
         musicRepository.saveMusic(music);
-        return music.getFile().getSystemFileName();
+        //return music.getFile().getSystemFileName();
+        return music;
     }
 
     @Transactional

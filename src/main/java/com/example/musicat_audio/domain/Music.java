@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -30,7 +31,7 @@ public class Music {
 
     @Column(name="article_no")
     private int articleNo;
-  
+
     public Music(MetaFile file, Thumbnail thumbnail, String title, int memberNo, int articleNo) {
         this.file = file;
         this.thumbnail = thumbnail;
