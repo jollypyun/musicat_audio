@@ -53,7 +53,7 @@ public class AudioController {
 
     @PostMapping(value = "musics/uploadFile")
     public EntityModel<Music> upload(@RequestParam("audio") MultipartFile file, @RequestParam("image") MultipartFile imagefile, @RequestParam("title") String title,
-                                         @RequestParam("memberNo") @Min(6) int memberNo, @RequestParam("articleNo") int aritlceNo) {
+                                         @RequestParam("memberNo") @Min(6) int memberNo) {
 
         System.out.println("upload");
         FileManager temp = new FileManager();
@@ -67,30 +67,43 @@ public class AudioController {
             if(imagefile != null)
                 metafile_image = temp.uploadFile(imagefile);
 
-            music = musicService.saveMusic(metafile_music, metafile_image, title, memberNo, aritlceNo);
+            music = musicService.saveMusic(metafile_music, metafile_image, title, memberNo);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         EntityModel<Music> entityModel = EntityModel.of(music);
-        //entityModel.add(Link.of("/whatever", "list"));
-        WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).streamAudio(music.getFile().getSystemFileName()));
-        entityModel.add(linkTo.withRel("resourceURL"));
-
-        //entityModel.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(AudioController.class).streamAudio(music.getFile().getSystemFileName())).withRel("streaming"));
-       //entityModel.add(WebMvcLinkBuilder.linkTo(AudioController.class).slash("musics").slash(music.getFile().getSystemFileName()).withRel("resourceURL"));
-//        WebMvcLinkBuilder.linkTo().with
+        entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getFile().getSystemFileName())).withRel("musicResourceURL"));
+        entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
 
         return entityModel;
     }
 
-    @DeleteMapping("musics/{articleNo}")
-    public ResponseEntity<String> deleteMusic(@PathVariable("articleNo") int articleNo) {
+    @DeleteMapping("musics/deleteByArticleNo/{articleNo}")
+    public ResponseEntity<String> deleteMusicByArticleNo(@PathVariable("articleNo") int articleNo) {
 
-        musicService.deleteMusic(articleNo);
+        musicService.deleteMusicByArticleNo(articleNo);
 
         return new ResponseEntity<>("delete success", HttpStatus.OK);
     }
+
+    @DeleteMapping("musics/deleteById/{musicId}")
+    public ResponseEntity<String> deleteMusicByMusicId(@PathVariable("musicId") Long musicId) {
+
+        musicService.deleteMusicByMusicId(musicId);
+        return new ResponseEntity<>("delete success", HttpStatus.OK);
+    }
+
+    @PutMapping("musics/connectToArticle/{musicId}/{articleNo}")
+    public ResponseEntity<String> connectToArticle(@PathVariable("musicId") Long musicId, @PathVariable("articleNo") int articleNo) {
+
+        musicService.connectToArticle(musicId, articleNo);
+
+        return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+
+
+
     @GetMapping("musics/find/{id}")
     public EntityModel<Music> findMusic(@PathVariable("id") Long musicId) {
 

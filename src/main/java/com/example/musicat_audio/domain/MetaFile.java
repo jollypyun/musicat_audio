@@ -2,9 +2,12 @@ package com.example.musicat_audio.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -27,8 +30,9 @@ public class MetaFile {
     @Column(name = "filetype", nullable = false, length = 20)
     private String fileType;
 
-    @Column(name = "writedate", nullable = false)
-    private Instant wirteDate;
+    @Column(name = "writedate")
+    @CreationTimestamp
+    private Instant writeDate;
 
    public MetaFile(String originalFileName, String systemFileName, String fileType, Long fileSize) {
         this.originalFileName = originalFileName;

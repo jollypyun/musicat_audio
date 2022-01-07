@@ -21,7 +21,7 @@ public class MusicService {
     }
 
     @Transactional
-    public Music saveMusic(MetaFile file, MetaFile imageFile, String title, int memberNo, int articleNo) {
+    public Music saveMusic(MetaFile file, MetaFile imageFile, String title, int memberNo) {
         // 파일 테이블에 저장
         String systemfileName = musicRepository.saveFile(file); // 음악파일 저장
         musicRepository.saveFile(imageFile); // 썸네일 파일 저장
@@ -31,18 +31,31 @@ public class MusicService {
         musicRepository.saveThumbnail(thumbnail);
 
         // music 테이블에 저장
-        Music music = new Music(file, thumbnail, title, memberNo, articleNo);
+        Music music = new Music(file, thumbnail, title, memberNo);
         musicRepository.saveMusic(music);
         //return music.getFile().getSystemFileName();
         return music;
     }
 
     @Transactional
-    public void deleteMusic(int articleNo) {
+    public void deleteMusicByArticleNo(int articleNo) {
         musicRepository.deleteMusics(articleNo);
+    }
+
+    @Transactional
+    public void deleteMusicByMusicId(Long musicId) {
+        Music music = musicRepository.findOne_Music(musicId);
+        musicRepository.deleteMusic(music);
     }
 
     public Music findMusic(Long musicId) {
         return musicRepository.findOne_Music(musicId);
+    }
+
+    @Transactional
+    public void connectToArticle(Long musicId, int articleNo){
+        Music music = findMusic(musicId);
+        music.connectToArticle(articleNo);
+        musicRepository.saveMusic(music);
     }
 }

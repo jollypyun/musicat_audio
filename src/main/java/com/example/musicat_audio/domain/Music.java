@@ -32,11 +32,14 @@ public class Music {
     @Column(name="article_no")
     private int articleNo;
 
-    public Music(MetaFile file, Thumbnail thumbnail, String title, int memberNo, int articleNo) {
+    public Music(MetaFile file, Thumbnail thumbnail, String title, int memberNo) {
         this.file = file;
         this.thumbnail = thumbnail;
         this.title = title;
         this.memberNo = memberNo;
+    }
+
+    public void connectToArticle(int articleNo) {
         this.articleNo = articleNo;
     }
 }
