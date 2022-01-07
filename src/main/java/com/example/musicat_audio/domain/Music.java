@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,12 +28,18 @@ public class Music {
 
     @Column(name="member_no", nullable = false)
     private int memberNo;
-  
-    public Music(MetaFile file, Thumbnail thumbnail, String title, int memberNo, int articleNo) {
+
+    @Column(name="article_no")
+    private int articleNo;
+
+    public Music(MetaFile file, Thumbnail thumbnail, String title, int memberNo) {
         this.file = file;
         this.thumbnail = thumbnail;
         this.title = title;
         this.memberNo = memberNo;
+    }
+
+    public void connectToArticle(int articleNo) {
         this.articleNo = articleNo;
     }
 }

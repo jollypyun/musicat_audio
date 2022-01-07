@@ -2,14 +2,22 @@ package com.example.musicat_audio.controller;
 
 import com.example.musicat_audio.domain.MetaFile;
 import com.example.musicat_audio.domain.Music;
+import com.example.musicat_audio.exception.customException.MusicNotFoundException;
 import com.example.musicat_audio.service.MusicService;
 import com.example.musicat_audio.utill.FileManager;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.Resource;
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -18,10 +26,16 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
-@RequestMapping("/api/music/")
+@RequestMapping("/api/")
+@Validated
 public class AudioController {
 
     public static final String AUDIO_PATH = "d:\\temp\\spring_uploaded_files";
@@ -37,11 +51,14 @@ public class AudioController {
         return "hello";
     }
 
-    @PostMapping(value = "uploadFile")
-    public ResponseEntity<String> upload(@RequestParam("audio") MultipartFile file, @RequestParam("image") MultipartFile imagefile, @RequestParam("title") String title,
-                                         @RequestParam("memberNo") int memberNo, @RequestParam("articleNo") int aritlceNo) {
+    @PostMapping(value = "musics/uploadFile")
+    public EntityModel<Music> upload(@RequestParam("audio") MultipartFile file, @RequestParam("image") MultipartFile imagefile, @RequestParam("title") String title,
+                                         @RequestParam("memberNo") @Min(6) int memberNo) {
+
+        System.out.println("upload");
         FileManager temp = new FileManager();
         String fileName = "there is no file.";
+        Music music = null;
         try {
             MetaFile metafile_music = null;
             MetaFile metafile_image = null;
@@ -49,31 +66,64 @@ public class AudioController {
                 metafile_music = temp.uploadFile(file);
             if(imagefile != null)
                 metafile_image = temp.uploadFile(imagefile);
-            
-            fileName = musicService.saveMusic(metafile_music, metafile_image, title, memberNo, aritlceNo);
+
+            music = musicService.saveMusic(metafile_music, metafile_image, title, memberNo);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new ResponseEntity<>(fileName + "title : " + title, HttpStatus.OK);
+
+        EntityModel<Music> entityModel = EntityModel.of(music);
+        entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getFile().getSystemFileName())).withRel("musicResourceURL"));
+        entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
+
+        return entityModel;
     }
 
-    @DeleteMapping("delete/{articleNo}")
-    public ResponseEntity<String> deleteMusic(@PathVariable("articleNo") int articleNo) {
+    @DeleteMapping("musics/deleteByArticleNo/{articleNo}")
+    public ResponseEntity<String> deleteMusicByArticleNo(@PathVariable("articleNo") int articleNo) {
 
-        musicService.deleteMusic(articleNo);
+        musicService.deleteMusicByArticleNo(articleNo);
 
         return new ResponseEntity<>("delete success", HttpStatus.OK);
     }
-    @GetMapping("get/{id}")
-    public String findMusic(@PathVariable("id") Long musicId) {
+
+    @DeleteMapping("musics/deleteById/{musicId}")
+    public ResponseEntity<String> deleteMusicByMusicId(@PathVariable("musicId") Long musicId) {
+
+        musicService.deleteMusicByMusicId(musicId);
+        return new ResponseEntity<>("delete success", HttpStatus.OK);
+    }
+
+    @PutMapping("musics/connectToArticle/{musicId}/{articleNo}")
+    public ResponseEntity<String> connectToArticle(@PathVariable("musicId") Long musicId, @PathVariable("articleNo") int articleNo) {
+
+        musicService.connectToArticle(musicId, articleNo);
+
+        return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+
+
+
+    @GetMapping("musics/find/{id}")
+    public EntityModel<Music> findMusic(@PathVariable("id") Long musicId) {
 
         Music music = musicService.findMusic(musicId);
-        return music.getFile().getSystemFileName();
+
+        if(music == null)
+            throw new MusicNotFoundException("there is no music");
+
+        EntityModel<Music> entityModel = EntityModel.of(music);
+        entityModel.add(Link.of("/whatever", "list"));
+        return entityModel;
+        //return "http://localhost:20000/api/musics/find/" + music.getFile().getSystemFileName();
     }
-    @GetMapping("streaming/{fileName}")
-    public Mono<ResponseEntity<byte[]>> streamAudio(@RequestHeader(value = "Range", required = false) String httpRangeList,
+
+    @GetMapping("musics/{fileName}")
+    public Mono<ResponseEntity<byte[]>> streamAudio( /* @RequestHeader(value = "Range", required = false) String httpRangeList,*/
                                                     @PathVariable("fileName") String fileName) {
-        return Mono.just(getContent(AUDIO_PATH, fileName, httpRangeList, "audio"));
+        //return Mono.just(getContent(AUDIO_PATH, fileName, httpRangeList, "audio"));
+        return Mono.just(getContent(AUDIO_PATH, fileName, null, "audio"));
+
     }
 
     // 나중에 FileManager 로 뺄 것
