@@ -3,10 +3,12 @@ server:
 
 spring:
   datasource:
-    #url: jdbc:mysql://3.38.21.160:3306/musicat_audio
-    url: jdbc:mysql://127.0.0.1:3306/musicat_audio?characterEncoding=UTF-8&serverTimezone=UTC
-    username: root
-    password: mymysql
+    url: jdbc:mysql://13.124.245.202:3306/musicat_audio?characterEncoding=UTF-8&serverTimezone=UTC
+#    url: jdbc:mysql://127.0.0.1:3306/musicat_audio?characterEncoding=UTF-8&serverTimezone=UTC
+    username: scott
+    password: Tiger_1234
+#    username: root
+#   password: russia387
     driver-class-name: com.mysql.cj.jdbc.Driver
   mvc:
     async:
