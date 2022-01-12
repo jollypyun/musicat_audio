@@ -2,13 +2,16 @@ package com.example.musicat_audio.repository;
 
 import com.example.musicat_audio.domain.MetaFile;
 import com.example.musicat_audio.domain.Music;
+import com.example.musicat_audio.domain.Playlist;
 import com.example.musicat_audio.domain.Thumbnail;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
+@Slf4j
 @Repository
 public class MusicRepository {
 
@@ -56,5 +59,4 @@ public class MusicRepository {
                 .setParameter("articleno", articleNo)
                 .getResultList();
     }
-
 }
