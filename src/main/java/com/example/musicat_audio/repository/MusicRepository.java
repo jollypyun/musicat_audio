@@ -2,12 +2,15 @@ package com.example.musicat_audio.repository;
 
 import com.example.musicat_audio.domain.MetaFile;
 import com.example.musicat_audio.domain.Music;
+import com.example.musicat_audio.domain.Playlist;
 import com.example.musicat_audio.domain.Thumbnail;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 
+@Slf4j
 @Repository
 public class MusicRepository {
 
@@ -49,5 +52,4 @@ public class MusicRepository {
     public Music findOne_Music(Long musicId) {
         return em.find(Music.class, musicId);
     }
-
 }

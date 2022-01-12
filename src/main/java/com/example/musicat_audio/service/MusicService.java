@@ -2,6 +2,7 @@ package com.example.musicat_audio.service;
 
 import com.example.musicat_audio.domain.MetaFile;
 import com.example.musicat_audio.domain.Music;
+import com.example.musicat_audio.domain.Playlist;
 import com.example.musicat_audio.domain.Thumbnail;
 import com.example.musicat_audio.repository.MusicRepository;
 import org.springframework.beans.factory.annotation.Autowired;

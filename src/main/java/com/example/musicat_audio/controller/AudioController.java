@@ -2,9 +2,14 @@ package com.example.musicat_audio.controller;
 
 import com.example.musicat_audio.domain.MetaFile;
 import com.example.musicat_audio.domain.Music;
+import com.example.musicat_audio.domain.Playlist;
 import com.example.musicat_audio.exception.customException.MusicNotFoundException;
 import com.example.musicat_audio.service.MusicService;
+import com.example.musicat_audio.service.PlaylistService;
 import com.example.musicat_audio.utill.FileManager;
+import io.swagger.models.auth.In;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -28,6 +33,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -36,14 +42,17 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/api/")
 @Validated
+@Slf4j
 public class AudioController {
 
     public static final String AUDIO_PATH = "d:\\temp\\spring_uploaded_files";
     public static final int BYTE_RANGE = 128; // increase the byterange from here
 
     private MusicService musicService;
+    private PlaylistService playlistService;
     public AudioController(MusicService musicService) {
         this.musicService = musicService;
+        this.playlistService = playlistService;
     }
 
     @GetMapping("/hello")
@@ -124,6 +133,20 @@ public class AudioController {
         //return Mono.just(getContent(AUDIO_PATH, fileName, httpRangeList, "audio"));
         return Mono.just(getContent(AUDIO_PATH, fileName, null, "audio"));
 
+    }
+
+    // 플레이리스트 상세 불러오기
+    @GetMapping("playlists/detail/{playlistNo}")
+    public CollectionModel<Music> findDetailPlaylist(@PathVariable int playlistNo) {
+        log.info("playlistNo : " + playlistNo);
+        List<Music> musics = playlistService.showDetailPlaylist(playlistNo);
+        CollectionModel<Music> cm = CollectionModel.of(musics);
+        for(Music m : musics) {
+            cm.add(linkTo(methodOn(this.getClass()).streamAudio(m.getFile().getSystemFileName())).withRel("musicResourceURL"));
+            cm.add(linkTo(methodOn(this.getClass()).streamAudio(m.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
+        }
+
+        return cm;
     }
 
     // 나중에 FileManager 로 뺄 것

@@ -16,10 +16,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/")
@@ -35,7 +39,7 @@ public class PlaylistController {
 
     // 플레이리스트 생성
     @PostMapping("playlists/create")
-    public ResponseEntity<Playlist> createPli(@RequestBody Playlist playlist) {
+    public ResponseEntity<Playlist> createPli(@RequestParam("playlist") Playlist playlist, @RequestParam("image") MultipartFile file) {
         log.info("" + playlist.getPlaylistName());
         playlistService.insertPlaylist(playlist);
         return new ResponseEntity<>(playlist, HttpStatus.OK);
@@ -49,6 +53,14 @@ public class PlaylistController {
         Long plNo = Long.valueOf(playlistNo);
         playlistService.delPlaylist(plNo);
         return new ResponseEntity<>("Playlist is deleted successfully", HttpStatus.OK);
+    }
+
+    // 플레이리스트안에 곡 넣기
+    @PostMapping("playlists/push")
+    public ResponseEntity<String> pushMusicTo(@RequestBody Map<String, Object> map) {
+        log.info("map : " + map);
+        playlistService.addMusicsToPlaylist(map);
+        return null;
     }
 
     // 플레이리스트안에 곡 넣기
@@ -101,14 +113,6 @@ public class PlaylistController {
         log.info("memberNo : " + memberNo);
         List<Playlist> lst = playlistService.showPlaylist(memberNo);
         return lst;
-    }
-
-    // 플레이리스트 상세 불러오기
-    @GetMapping("playlists/detail/{playlistNo}")
-    public List<Music> findDetailPlaylist(@PathVariable int playlistNo) {
-        log.info("playlistNo : " + playlistNo);
-        List<Music> musics = playlistService.showDetailPlaylist(playlistNo);
-        return musics;
     }
 
     @GetMapping("onePlaylists/{playlistNo}")
