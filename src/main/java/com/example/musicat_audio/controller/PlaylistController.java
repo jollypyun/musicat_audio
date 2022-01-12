@@ -62,13 +62,6 @@ public class PlaylistController {
         return null;
     }
 
-    // 플레이리스트안에 곡 넣기
-    @PostMapping("playlists/push")
-    public ResponseEntity<String> pushMusic(@RequestBody Map<String, Object> map) {
-        log.info("map : " + map);
-        playlistService.addMusicsToPlaylist(map);
-        return null;
-    }
 
     // 특정 플레이리스트 안의 곡 빼기
     @DeleteMapping("playlists/pull/{playlistNo}/{musicNos}")
