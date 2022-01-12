@@ -7,8 +7,6 @@ spring:
 #    url: jdbc:mysql://127.0.0.1:3306/musicat_audio?characterEncoding=UTF-8&serverTimezone=UTC
     username: scott
     password: Tiger_1234
-#    username: root
-#   password: russia387
     driver-class-name: com.mysql.cj.jdbc.Driver
   mvc:
     async:
