@@ -47,11 +47,10 @@ public class PlaylistController {
 
     // 플레이리스트 삭제
     @DeleteMapping("playlists/delete/{memberNo}/{playlistNo}")
-    public ResponseEntity<String> deletePli(@PathVariable(name = "memberNo") int memberNo, @PathVariable(name = "playlistNo") int playlistNo) {
+    public ResponseEntity<String> deletePli(@PathVariable(name = "memberNo") int memberNo, @PathVariable(name = "playlistNo") String playlistNo) {
         log.info("memberNo : " + memberNo);
         log.info("playlistNo : " + playlistNo);
-        Long plNo = Long.valueOf(playlistNo);
-        playlistService.delPlaylist(plNo);
+        playlistService.delPlaylist(playlistNo);
         return new ResponseEntity<>("Playlist is deleted successfully", HttpStatus.OK);
     }
 
@@ -73,22 +72,21 @@ public class PlaylistController {
 
     // 특정 플레이리스트 안의 곡 빼기
     @DeleteMapping("playlists/pull/{playlistNo}/{musicNos}")
-    public ResponseEntity<String> pullMusic(@PathVariable(name = "playlistNo") int playlistNo, @PathVariable(name = "musicNos") String list) {
+    public ResponseEntity<String> pullMusic(@PathVariable(name = "playlistNo") String playlistNo, @PathVariable(name = "musicNos") String list) {
         log.info("playlistNo : " + playlistNo);
         String[] lst = list.substring(1,list.length()-1).split(",");
-        Long plNo = Long.valueOf(playlistNo);
         List<Long> deleteList = new ArrayList<Long>();
         for(String l : lst) {
             deleteList.add(Long.valueOf(l.trim()));
         }
         log.info("deleteList : " + deleteList);
-        playlistService.removeMusicFromPlaylist(plNo, deleteList);
+        playlistService.removeMusicFromPlaylist(playlistNo, deleteList);
         return null;
     }
 
     // 플레이리스트 수정
     @PostMapping("playlists/update")
-    public void changePlaylistName(@RequestParam("image")MultipartFile img, @RequestParam("playlistNo")int playlistNo, @RequestParam("title") String title) {
+    public void changePlaylistName(@RequestParam("image")MultipartFile img, @RequestParam("playlistNo")String playlistNo, @RequestParam("title") String title) {
         FileManager temp = new FileManager();
         String fileName = "there is no file.";
         Playlist playlist = null;
@@ -115,8 +113,9 @@ public class PlaylistController {
         return lst;
     }
 
+
     @GetMapping("onePlaylists/{playlistNo}")
-    public Playlist getOnePlaylist(@PathVariable int playlistNo) {
+    public Playlist getOnePlaylist(@PathVariable String playlistNo) {
         log.info("playlistNo : " + playlistNo);
         return playlistService.showOnePlaylist(playlistNo);
     }
