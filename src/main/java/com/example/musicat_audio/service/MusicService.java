@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -50,6 +51,10 @@ public class MusicService {
 
     public Music findMusic(Long musicId) {
         return musicRepository.findOne_Music(musicId);
+    }
+
+    public List<Music> findMusics(int articleNo) {
+        return musicRepository.findMusics(articleNo);
     }
 
     @Transactional

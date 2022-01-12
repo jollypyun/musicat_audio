@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 @Repository
 public class MusicRepository {
@@ -48,6 +49,12 @@ public class MusicRepository {
     // music 찾기
     public Music findOne_Music(Long musicId) {
         return em.find(Music.class, musicId);
+    }
+
+    public List<Music> findMusics(int articleNo){
+        return em.createQuery("SELECT m FROM Music m WHERE m.articleNo = :articleno")
+                .setParameter("articleno", articleNo)
+                .getResultList();
     }
 
 }

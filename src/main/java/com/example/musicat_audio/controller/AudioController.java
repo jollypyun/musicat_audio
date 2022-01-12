@@ -5,6 +5,7 @@ import com.example.musicat_audio.domain.Music;
 import com.example.musicat_audio.exception.customException.MusicNotFoundException;
 import com.example.musicat_audio.service.MusicService;
 import com.example.musicat_audio.utill.FileManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
+import javax.swing.text.html.parser.Entity;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.io.ByteArrayOutputStream;
@@ -29,10 +31,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/")
 @Validated
@@ -42,6 +46,7 @@ public class AudioController {
     public static final int BYTE_RANGE = 128; // increase the byterange from here
 
     private MusicService musicService;
+
     public AudioController(MusicService musicService) {
         this.musicService = musicService;
     }
@@ -53,7 +58,7 @@ public class AudioController {
 
     @PostMapping(value = "musics/uploadFile")
     public EntityModel<Music> upload(@RequestParam("audio") MultipartFile file, @RequestParam("image") MultipartFile imagefile, @RequestParam("title") String title,
-                                         @RequestParam("memberNo") @Min(6) int memberNo) {
+                                     @RequestParam("memberNo") /*@Min(6)*/ int memberNo) {
 
         System.out.println("upload");
         FileManager temp = new FileManager();
@@ -62,9 +67,9 @@ public class AudioController {
         try {
             MetaFile metafile_music = null;
             MetaFile metafile_image = null;
-            if(file != null)
+            if (file != null)
                 metafile_music = temp.uploadFile(file);
-            if(imagefile != null)
+            if (imagefile != null)
                 metafile_image = temp.uploadFile(imagefile);
 
             music = musicService.saveMusic(metafile_music, metafile_image, title, memberNo);
@@ -103,13 +108,12 @@ public class AudioController {
     }
 
 
-
     @GetMapping("musics/find/{id}")
     public EntityModel<Music> findMusic(@PathVariable("id") Long musicId) {
 
         Music music = musicService.findMusic(musicId);
 
-        if(music == null)
+        if (music == null)
             throw new MusicNotFoundException("there is no music");
 
         EntityModel<Music> entityModel = EntityModel.of(music);
@@ -118,9 +122,41 @@ public class AudioController {
         //return "http://localhost:20000/api/musics/find/" + music.getFile().getSystemFileName();
     }
 
+    @GetMapping("musics/findMusics/{articleNo}")
+    public List<EntityModel<Music>> findMusics(@PathVariable int articleNo) {
+
+        List<Music> musics = musicService.findMusics(articleNo);
+
+        return musics.stream().map(music -> {
+            // Java Stream을 이용하여 각 Music 객체의 엔티티 모델 생성.
+            EntityModel<Music> entityModel = EntityModel.of(music);
+            // 각 엔티티 모델마다 링크 추가.
+            log.info("music : " + music.getFile().getSystemFileName());
+            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getFile().getSystemFileName())).withRel("musicResourceURL"));
+            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
+//        );
+            return entityModel;
+            // 컬렉션으로 반환.
+        }).collect(Collectors.toList());
+//        if(musics.isEmpty())
+
+        //EntityModel<Music> entityModel = EntityModel.of(music);
+//        entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getFile().getSystemFileName())).withRel("musicResourceURL"));
+//        entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
+
+//        List<BoardResult> boardList = boardService.getBoardList();
+//        // 각 요소를 EntityModel로 변환.
+//        List<EntityModel> collect = boardList.stream()
+//                .map(board -> EntityModel.of(board,
+//                        getLinkAddress().slash(board.getSeq()).withRel("get"),
+//                        getLinkAddress().slash(board.getSeq()).withRel("delete")))
+//                .collect(Collectors.toList());
+//
+    }
+
     @GetMapping("musics/{fileName}")
     public Mono<ResponseEntity<byte[]>> streamAudio( /* @RequestHeader(value = "Range", required = false) String httpRangeList,*/
-                                                    @PathVariable("fileName") String fileName) {
+            @PathVariable("fileName") String fileName) {
         //return Mono.just(getContent(AUDIO_PATH, fileName, httpRangeList, "audio"));
         return Mono.just(getContent(AUDIO_PATH, fileName, null, "audio"));
 
