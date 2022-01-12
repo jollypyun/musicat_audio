@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -31,6 +32,9 @@ public class Music {
 
     @Column(name="article_no")
     private int articleNo;
+
+    @OneToMany(mappedBy = "playlistNo", cascade = CascadeType.REMOVE)
+    private List<PlaylistNode> playlistNodes = new ArrayList<>();
 
     public Music(MetaFile file, Thumbnail thumbnail, String title, int memberNo) {
         this.file = file;
