@@ -15,9 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Playlist {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "playlist_no", nullable = false)
-    private Long id;
+    private String id;
 
     @Column(name = "member_no", nullable = false)
     private Integer memberNo;
@@ -31,7 +30,7 @@ public class Playlist {
     @OneToOne(mappedBy = "playlistNo", cascade = CascadeType.REMOVE)
     private PlaylistImage playlistImage;
 
-    public Playlist(Long id, int memberNo) {
+    public Playlist(String id, int memberNo) {
         this.id = id;
         this.memberNo = memberNo;
     }
@@ -41,7 +40,7 @@ public class Playlist {
         this.playlistName = playlistName;
     }
 
-    public Playlist(Long id, String playlistName) {
+    public Playlist(String id, String playlistName) {
         this.id = id;
         this.playlistName = playlistName;
     }

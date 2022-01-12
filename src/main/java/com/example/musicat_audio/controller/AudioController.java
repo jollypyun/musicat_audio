@@ -47,7 +47,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/api/")
 @Validated
-@Slf4j
 public class AudioController {
 
     public static final String AUDIO_PATH = "d:\\temp\\spring_uploaded_files";
@@ -174,7 +173,7 @@ public class AudioController {
 
     // 플레이리스트 상세 불러오기
     @GetMapping("playlists/detail/{playlistNo}")
-    public CollectionModel<Music> findDetailPlaylist(@PathVariable int playlistNo) {
+    public CollectionModel<Music> findDetailPlaylist(@PathVariable String playlistNo) {
         log.info("playlistNo : " + playlistNo);
         List<Music> musics = playlistService.showDetailPlaylist(playlistNo);
         CollectionModel<Music> cm = CollectionModel.of(musics);

@@ -27,15 +27,14 @@ public class PlaylistRepository {
     }
 
     // 플레이리스트 삭제
-    public void deletePlaylist(Long playlistNo) {
+    public void deletePlaylist(String playlistNo) {
         log.info("info : " + playlistNo);
         em.createQuery("DELETE FROM Playlist P WHERE P.id = :playlistNo").setParameter("playlistNo", playlistNo).executeUpdate();
     }
 
     // 특정 플레이리스트 안에 곡 넣기
-    public void insertPlaylistNode(int playlistNo, List<Integer> list) {
-        Long plNo = Long.valueOf(playlistNo);
-        Playlist playlist = em.find(Playlist.class, plNo);
+    public void insertPlaylistNode(String playlistNo, List<Integer> list) {
+        Playlist playlist = em.find(Playlist.class, playlistNo);
         for(long num : list) {
             Music music = em.find(Music.class, num);
             PlaylistNode playlistNode = new PlaylistNode();
@@ -46,7 +45,7 @@ public class PlaylistRepository {
     }
 
     // 특정 플레이리스트 안의 곡 빼기
-    public void deletePlaylistNode(Long playlistNo, List<Long> deleteList) {
+    public void deletePlaylistNode(String playlistNo, List<Long> deleteList) {
         Playlist playlist = em.find(Playlist.class, playlistNo);
         for(long num : deleteList) {
             Music music = em.find(Music.class, num);
@@ -63,7 +62,7 @@ public class PlaylistRepository {
     }
 
     // 플레이리스트 수정
-    public void updatePlaylist(PlaylistImage playlistImage, String playlistName, Long playlistNo) {
+    public void updatePlaylist(PlaylistImage playlistImage, String playlistName, String playlistNo) {
         Playlist playlist = em.find(Playlist.class, playlistNo);
         em.createQuery("UPDATE Playlist P SET P.playlistName = :playlistName, P.playlistImage = :playlistImage WHERE P.id = :playlistNo")
                 .setParameter("playlistName", playlistName)
@@ -81,7 +80,7 @@ public class PlaylistRepository {
     }
 
     // 플레이리스트 상세정보 가져오기
-    public List<Music> selectDetailPlaylist(Long playlistNo) {
+    public List<Music> selectDetailPlaylist(String playlistNo) {
         List<Music> playlists = em.createQuery("SELECT PN.musicNo FROM PlaylistNode PN JOIN Playlist P ON P.id = PN.playlistNo.id WHERE P.id = :playlistNo")
                 .setParameter("playlistNo", playlistNo)
                 .getResultList();
@@ -92,7 +91,7 @@ public class PlaylistRepository {
     }
 
     // 플레이리스트 이미지 정보 가져오고 metafile 업데이트
-    public PlaylistImage selectAndSavePlaylistImage(Long playlistNo, MetaFile meta) {
+    public PlaylistImage selectAndSavePlaylistImage(String playlistNo, MetaFile meta) {
         MetaFile file = (MetaFile) em.createQuery("SELECT PI.fileNo FROM PlaylistImage PI WHERE PI.playlistNo = :playlistNo")
                 .setParameter("playlistNo", playlistNo)
                 .getSingleResult();
@@ -107,7 +106,7 @@ public class PlaylistRepository {
     }
 
     // 플레이리스트 하나의 정보 불러오기
-    public Playlist selectOnePlaylist(Long playlistNo) {
+    public Playlist selectOnePlaylist(String playlistNo) {
         Playlist playlist = em.find(Playlist.class, playlistNo);
         return playlist;
     }
