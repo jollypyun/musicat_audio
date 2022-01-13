@@ -195,6 +195,7 @@ public class AudioController {
         log.info("map : " + map);
         Playlist playlist = playlistService.addMusicsToPlaylist(map);
         List<Music> musics = playlistService.showDetailPlaylist(playlist.getId());
+        log.info("len : " + musics.size());
         return musics.stream().map(music -> {
             // Java Stream을 이용하여 각 Music 객체의 엔티티 모델 생성.
             EntityModel<Music> entityModel = EntityModel.of(music);
