@@ -47,14 +47,6 @@ public class PlaylistController {
         return new ResponseEntity<>("Playlist is deleted successfully", HttpStatus.OK);
     }
 
-    // 플레이리스트안에 곡 넣기
-    @PostMapping("playlists/push")
-    public ResponseEntity<String> pushMusicTo(@RequestBody Map<String, Object> map) {
-        log.info("map : " + map);
-        playlistService.addMusicsToPlaylist(map);
-        return null;
-    }
-
     // 특정 플레이리스트 안의 곡 빼기
     @DeleteMapping("playlists/pull/{playlistKey}/{musicNos}")
     public ResponseEntity<String> pullMusic(@PathVariable(name = "playlistKey") String playlistKey, @PathVariable(name = "musicNos") String list) {
