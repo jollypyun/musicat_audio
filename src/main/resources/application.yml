@@ -28,8 +28,9 @@ spring:
 
 
 file:
-  dir: /upload/
-#  dir: C:\Users\MZC\IdeaProjects\musicat_audio\src\main\resources\static\upload\audio
+# dir: /upload_audio/
+  dir: C:\Users\MZC\IdeaProjects\musicat_audio\src\main\resources\static\upload\audio
+
 
 logging:
   level:

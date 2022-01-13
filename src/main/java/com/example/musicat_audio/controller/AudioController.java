@@ -55,7 +55,7 @@ public class AudioController {
     private MusicService musicService;
     private PlaylistService playlistService;
   
-    public AudioController(MusicService musicService) {
+    public AudioController(MusicService musicService, PlaylistService playlistService) {
         this.musicService = musicService;
         this.playlistService = playlistService;
     }
@@ -173,16 +173,40 @@ public class AudioController {
 
     // 플레이리스트 상세 불러오기
     @GetMapping("playlists/detail/{playlistNo}")
-    public CollectionModel<Music> findDetailPlaylist(@PathVariable String playlistNo) {
+    public List<EntityModel<Music>> findDetailPlaylist(@PathVariable String playlistNo) {
         log.info("playlistNo : " + playlistNo);
         List<Music> musics = playlistService.showDetailPlaylist(playlistNo);
-        CollectionModel<Music> cm = CollectionModel.of(musics);
-        for(Music m : musics) {
-            cm.add(linkTo(methodOn(this.getClass()).streamAudio(m.getFile().getSystemFileName())).withRel("musicResourceURL"));
-            cm.add(linkTo(methodOn(this.getClass()).streamAudio(m.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
-        }
+        return musics.stream().map(music -> {
+            // Java Stream을 이용하여 각 Music 객체의 엔티티 모델 생성.
+            EntityModel<Music> entityModel = EntityModel.of(music);
+            // 각 엔티티 모델마다 링크 추가.
+            log.info("music : " + music.getFile().getSystemFileName());
+            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getFile().getSystemFileName())).withRel("musicResourceURL"));
+            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
+//        );
+            return entityModel;
+            // 컬렉션으로 반환.
+        }).collect(Collectors.toList());
+    }
 
-        return cm;
+    // 플레이리스트안에 곡 넣기
+    @PostMapping("playlists/push")
+    public List<EntityModel<Music>> pushMusicTo(@RequestBody Map<String, Object> map) {
+        log.info("map : " + map);
+        Playlist playlist = playlistService.addMusicsToPlaylist(map);
+        List<Music> musics = playlistService.showDetailPlaylist(playlist.getId());
+        log.info("len : " + musics.size());
+        return musics.stream().map(music -> {
+            // Java Stream을 이용하여 각 Music 객체의 엔티티 모델 생성.
+            EntityModel<Music> entityModel = EntityModel.of(music);
+            // 각 엔티티 모델마다 링크 추가.
+            log.info("music : " + music.getFile().getSystemFileName());
+            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getFile().getSystemFileName())).withRel("musicResourceURL"));
+            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
+//        );
+            return entityModel;
+            // 컬렉션으로 반환.
+        }).collect(Collectors.toList());
     }
 
     // 나중에 FileManager 로 뺄 것
