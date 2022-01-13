@@ -42,13 +42,14 @@ public class PlaylistService {
 
     // 특정 플레이리스트 안에 곡 넣기
     @Transactional
-    public void addMusicsToPlaylist(Map<String, Object> map) {
+    public Playlist addMusicsToPlaylist(Map<String, Object> map) {
         List<Integer> list = new ArrayList<Integer>();
         list = (ArrayList)map.get("musicNos");
         String playlistNo = (String) map.get("playlistNo");
         log.info("musicNos : " + list);
         log.info("playlistNo : " + playlistNo);
-        playlistRepository.insertPlaylistNode(playlistNo, list);
+        Playlist playlist = playlistRepository.insertPlaylistNode(playlistNo, list);
+        return playlist;
     }
 
     // 특정 플레이리스트 안의 곡 빼기

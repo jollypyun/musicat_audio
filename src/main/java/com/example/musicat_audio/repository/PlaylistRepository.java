@@ -33,7 +33,7 @@ public class PlaylistRepository {
     }
 
     // 특정 플레이리스트 안에 곡 넣기
-    public void insertPlaylistNode(String playlistNo, List<Integer> list) {
+    public Playlist insertPlaylistNode(String playlistNo, List<Integer> list) {
         Playlist playlist = em.find(Playlist.class, playlistNo);
         for(long num : list) {
             Music music = em.find(Music.class, num);
@@ -42,6 +42,8 @@ public class PlaylistRepository {
             playlistNode.setMusicNo(music);
             em.persist(playlistNode);
         }
+        Playlist newPl = em.find(Playlist.class, playlistNo);
+        return newPl;
     }
 
     // 특정 플레이리스트 안의 곡 빼기
