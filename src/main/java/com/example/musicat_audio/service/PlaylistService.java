@@ -36,8 +36,8 @@ public class PlaylistService {
 
     // 플레이리스트 삭제
     @Transactional
-    public void delPlaylist(String playlistNo) {
-        playlistRepository.deletePlaylist(playlistNo);
+    public void delPlaylist(String playlistKey) {
+        playlistRepository.deletePlaylist(playlistKey);
     }
 
     // 특정 플레이리스트 안에 곡 넣기
@@ -45,25 +45,25 @@ public class PlaylistService {
     public void addMusicsToPlaylist(Map<String, Object> map) {
         List<Integer> list = new ArrayList<Integer>();
         list = (ArrayList)map.get("musicNos");
-        String playlistNo = (String) map.get("playlistNo");
+        String playlistKey = (String) map.get("playlistKey");
         log.info("musicNos : " + list);
-        log.info("playlistNo : " + playlistNo);
-        playlistRepository.insertPlaylistNode(playlistNo, list);
+        log.info("playlistKey : " + playlistKey);
+        playlistRepository.insertPlaylistNode(playlistKey, list);
     }
 
     // 특정 플레이리스트 안의 곡 빼기
     @Transactional
-    public void removeMusicFromPlaylist(String playlistNo, List<Long> deleteList) {
-        playlistRepository.deletePlaylistNode(playlistNo, deleteList);
+    public void removeMusicFromPlaylist(String playlistKey, List<Long> deleteList) {
+        playlistRepository.deletePlaylistNode(playlistKey, deleteList);
     }
 
     // 플레이리스트의 수정
     @Transactional
-    public void modifyPlaylistName(MetaFile file, String title, String playlistNo) {
+    public void modifyPlaylistName(MetaFile file, String title, String playlistKey) {
         // 플레이리스트에 맞는 이미지 넘버 찾기
-        PlaylistImage pi = playlistRepository.selectAndSavePlaylistImage(playlistNo, file);
+        PlaylistImage pi = playlistRepository.selectAndSavePlaylistImage(playlistKey, file);
         log.info("pi : " + pi.getFileNo());
-        playlistRepository.updatePlaylist(pi, title, playlistNo);
+        playlistRepository.updatePlaylist(pi, title, playlistKey);
     }
 
     // 플레이리스트 목록 불러오기
@@ -73,14 +73,14 @@ public class PlaylistService {
     }
 
     // 플레이리스트 상세 불러오기
-    public List<Music> showDetailPlaylist(String playlistNo) {
-        List<Music> playlists = playlistRepository.selectDetailPlaylist(playlistNo);
+    public List<Music> showDetailPlaylist(String playlistKey) {
+        List<Music> playlists = playlistRepository.selectDetailPlaylist(playlistKey);
         return playlists;
     }
 
     // 플레이리스트 하나의 정보 불러오기
-    public Playlist showOnePlaylist(String playlistNo) {
-        Playlist playlist = playlistRepository.selectOnePlaylist(playlistNo);
+    public Playlist showOnePlaylist(String playlistKey) {
+        Playlist playlist = playlistRepository.selectOnePlaylist(playlistKey);
         return playlist;
     }
 }

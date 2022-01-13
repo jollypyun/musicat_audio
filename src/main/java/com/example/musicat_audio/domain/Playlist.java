@@ -1,5 +1,6 @@
 package com.example.musicat_audio.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Playlist {
     @Id
-    @Column(name = "playlist_no", nullable = false)
+    @Column(name = "playlist_key", nullable = false)
     private String id;
 
     @Column(name = "member_no", nullable = false)
@@ -24,10 +25,12 @@ public class Playlist {
     @Column(name = "playlist_name", nullable = false, length = 50)
     private String playlistName;
 
-    @OneToMany(mappedBy = "playlistNo", cascade = CascadeType.REMOVE)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "playlistKey", cascade = CascadeType.REMOVE)
     private List<PlaylistNode> playlistNodes = new ArrayList<>();
 
-    @OneToOne(mappedBy = "playlistNo", cascade = CascadeType.REMOVE)
+    @JsonManagedReference
+    @OneToOne(mappedBy = "playlistKey", cascade = CascadeType.REMOVE)
     private PlaylistImage playlistImage;
 
     public Playlist(String id, int memberNo) {
@@ -43,5 +46,11 @@ public class Playlist {
     public Playlist(String id, String playlistName) {
         this.id = id;
         this.playlistName = playlistName;
+    }
+
+    public Playlist(String id, String playlistName, int memberNo) {
+        this.id = id;
+        this.playlistName = playlistName;
+        this.memberNo = memberNo;
     }
 }
