@@ -23,14 +23,14 @@ pipeline {
         
         stage('Deploy') {
             steps {
-                deploy adapters: [tomcat9(credentialsId: 'tomcat-db-username-password', path: '', url: 'http://13.124.245.202/')], contextPath: '/', onFailure: false, war: '**/*.war'
+                deploy adapters: [tomcat9(credentialsId: 'tomcat-db-username-password', path: '', url: 'http://13.124.245.202:20000/')], contextPath: '/', onFailure: false, war: '**/*.war'
 			}
         }
         
         stage('Restart') {
             steps {
-                sh '''curl -u tomcat:1111 http://13.124.245.202/host-manager/text/stop
-curl -u tomcat:1111 http://13.124.245.202/host-manager/text/start'''
+                sh '''curl -u tomcat:1111 http://13.124.245.202:20000/host-manager/text/stop
+curl -u tomcat:1111 http://13.124.245.202:20000/host-manager/text/start'''
             }
         }
     }
