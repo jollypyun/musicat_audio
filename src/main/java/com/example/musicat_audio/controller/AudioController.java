@@ -60,7 +60,7 @@ public class AudioController {
         this.playlistService = playlistService;
     }
 
-    @GetMapping("/hello")
+    @GetMapping("hello")
     public String index() {
         return "hello";
     }
