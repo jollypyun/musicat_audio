@@ -23,7 +23,7 @@ pipeline {
         
         stage('Deploy') {
             steps {
-                deploy adapters: [tomcat9(credentialsId: 'tomcat-db-username-password', path: '', url: 'http://13.124.245.202:20000/')], contextPath: '/', onFailure: false, war: '**/*.war'
+                deploy adapters: [tomcat9(credentialsId: 'tomcat-db-username-password', path: '', url: 'http://13.124.245.202/')], contextPath: '/', onFailure: false, war: '**/*.war'
 			}
         }
         
