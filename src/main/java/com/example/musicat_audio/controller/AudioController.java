@@ -49,7 +49,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Validated
 public class AudioController {
 
-    public static final String AUDIO_PATH = "d:\\temp\\spring_uploaded_files";
+    //public static final String AUDIO_PATH = "d:\\temp\\spring_uploaded_files";
+    public static final String AUDIO_PATH = "\\upload\\";
     public static final int BYTE_RANGE = 128; // increase the byterange from here
 
     private MusicService musicService;
@@ -216,8 +217,8 @@ public class AudioController {
         byte[] data;
         Long fileSize;
         String fileType = fileName.substring(fileName.lastIndexOf(".") + 1);
-        //String tempPath = new String("C:\\Users\\MZC\\IdeaProjects\\musicat_audio\\src\\main\\resources\\static\\upload\\audio");
-        String tempPath = new String("d:\\temp\\spring_uploaded_files");
+        //String tempPath = new String("d:\\temp\\spring_uploaded_files");
+        String tempPath = new String("\\upload\\");
         try {
             fileSize = Optional.ofNullable(fileName)
                     //.map(file -> Paths.get(getFilePath(location), file))
@@ -258,7 +259,8 @@ public class AudioController {
     public byte[] readByteRange(String location, String filename, long start, long end) throws IOException {
         //Path path = Paths.get(getFilePath(location), filename);
         //Path path = Paths.get("C:\\Users\\MZC\\IdeaProjects\\musicat_audio\\src\\main\\resources\\static\\upload\\audio", filename);
-        Path path = Paths.get("d:\\temp\\spring_uploaded_files", filename);
+        //Path path = Paths.get("d:\\temp\\spring_uploaded_files", filename);
+        Path path = Paths.get("\\upload\\", filename);
         try (InputStream inputStream = (Files.newInputStream(path));
              ByteArrayOutputStream bufferedOutputStream = new ByteArrayOutputStream()) {
             byte[] data = new byte[BYTE_RANGE];
