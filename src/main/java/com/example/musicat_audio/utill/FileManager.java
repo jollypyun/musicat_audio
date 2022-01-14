@@ -21,7 +21,7 @@ public class FileManager {
     //@Value("${spring.servlet.multipart.location}")
     //@Value("${file.dir}")
     //private String uploadPath = "d:\\temp\\spring_uploaded_files";
-    private String uploadPath = "/upload";
+    private String uploadPath = "/upload/";
 
     //만약 저장 경로 폴더가 없으면 생성
     public void init() {
@@ -54,7 +54,7 @@ public class FileManager {
         System.out.println("uploadPath + systemFileName" + this.uploadPath + systemFileName);
         //multipartFile.transferTo(new File(this.uploadPath + systemFileName));
         //multipartFile.transferTo(new File("d:\\temp\\spring_uploaded_files\\" + systemFileName));
-        multipartFile.transferTo(new File("/upload" + systemFileName));
+        multipartFile.transferTo(new File("/upload/" + systemFileName));
         return new MetaFile(originalFileName, systemFileName, ext, fileSize);
     }
 
