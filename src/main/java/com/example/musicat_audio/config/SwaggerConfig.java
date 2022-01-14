@@ -24,8 +24,7 @@ import java.util.*;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
-//    private static final Contact contact = new Contact("kso", "https://www.megazone.com/", "ks@mz.co.kr");
-    private static final Contact contact = new Contact("kso", "http://www.megazone.com/", "ks@mz.co.kr");
+    private static final Contact contact = new Contact("kso", "https://www.megazone.com/", "ks@mz.co.kr");
     private static final Set<String> sets = new HashSet<>(Arrays.asList("application/json"));
 
 
