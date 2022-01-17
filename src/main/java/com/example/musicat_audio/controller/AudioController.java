@@ -175,10 +175,13 @@ public class AudioController {
     }
 
     // 플레이리스트 상세 불러오기
-    @GetMapping("playlists/detail/{playlistNo}")
-    public List<EntityModel<Music>> findDetailPlaylist(@PathVariable String playlistNo) {
-        log.info("playlistNo : " + playlistNo);
-        List<Music> musics = playlistService.showDetailPlaylist(playlistNo);
+    @GetMapping("playlists/detail/{playlistKey}")
+    public List<EntityModel<Music>> findDetailPlaylist(@PathVariable String playlistKey) {
+        log.info("playlistNo : " + playlistKey);
+        List<Music> musics = playlistService.showDetailPlaylist(playlistKey);
+        for(Music m:musics) {
+            log.info("what the heck : " + m.getTitle());
+        }
         return musics.stream().map(music -> {
             // Java Stream을 이용하여 각 Music 객체의 엔티티 모델 생성.
             EntityModel<Music> entityModel = EntityModel.of(music);

@@ -30,8 +30,13 @@ public class PlaylistService {
 
     // 플레이리스트 생성
     @Transactional
-    public void insertPlaylist(Playlist playlist) {
-        playlistRepository.savePlaylist(playlist);
+    public void insertPlaylist(Playlist playlist, MetaFile meta) {
+        MetaFile newMe = playlistRepository.saveMetafileReturnFileNo(meta);
+        log.info("meta 완료");
+        Playlist newPl = playlistRepository.savePlaylist(playlist);
+        log.info("playlist 완료");
+        PlaylistImage playlistImage = new PlaylistImage(newPl, newMe);
+        playlistRepository.savePlaylistImage(playlistImage);
     }
 
     // 플레이리스트 삭제
@@ -60,11 +65,19 @@ public class PlaylistService {
 
     // 플레이리스트의 수정
     @Transactional
-    public void modifyPlaylistName(MetaFile file, String title, String playlistKey) {
+    public int modifyPlaylist(MetaFile file, String title, String playlistKey) {
+        Playlist playlist = null;
         // 플레이리스트에 맞는 이미지 넘버 찾기
-        PlaylistImage pi = playlistRepository.selectAndSavePlaylistImage(playlistKey, file);
-        log.info("pi : " + pi.getFileNo());
-        playlistRepository.updatePlaylist(pi, title, playlistKey);
+        if(file != null) {
+            PlaylistImage pi = playlistRepository.selectAndSavePlaylistImage(playlistKey, file);
+            log.info("pi : " + pi.getFileNo());
+            playlist = playlistRepository.updatePlaylistWithImage(pi, title, playlistKey);
+        }
+        else {
+            playlist = playlistRepository.updatePlaylist(title, playlistKey);
+        }
+        log.info("memberNo of playlist : " + playlist.getMemberNo());
+        return playlist.getMemberNo();
     }
 
     // 플레이리스트 목록 불러오기
@@ -82,6 +95,17 @@ public class PlaylistService {
     // 플레이리스트 하나의 정보 불러오기
     public Playlist showOnePlaylist(String playlistKey) {
         Playlist playlist = playlistRepository.selectOnePlaylist(playlistKey);
+        return playlist;
+    }
+
+    @Transactional
+    public Playlist addPlaylistToNow(String nowPlaying, String playlistKey) {
+        List<Music> musics = playlistRepository.selectDetailPlaylist(playlistKey);
+        List<Integer> nums = new ArrayList<>();
+        for(Music m : musics) {
+            nums.add(m.getId().intValue());
+        }
+        Playlist playlist = playlistRepository.insertPlaylistNode(nowPlaying, nums);
         return playlist;
     }
 }

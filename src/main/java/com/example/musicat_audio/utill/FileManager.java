@@ -20,7 +20,7 @@ public class FileManager {
 
     //@Value("${spring.servlet.multipart.location}")
     //@Value("${file.dir}")
-    //private String uploadPath = "d:\\temp\\spring_uploaded_files";
+
     private String uploadPath = "/upload/";
 
     //만약 저장 경로 폴더가 없으면 생성
