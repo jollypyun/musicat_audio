@@ -15,7 +15,8 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
-      location : d:\\temp\\spring_uploaded_files
+      #location : /upload
+      #location : d:\\temp\\spring_uploaded_files
     #https://hello-bryan.tistory.com/343
   jpa:
     hibernate:
@@ -28,7 +29,9 @@ spring:
 
 
 file:
-  dir: C:\Users\MZC\IdeaProjects\musicat_audio\src\main\resources\static\upload\audio
+  dir: /upload_audio/
+#  dir: C:\Users\MZC\IdeaProjects\musicat_audio\src\main\resources\static\upload\audio
+
 
 logging:
   level:
