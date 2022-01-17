@@ -31,6 +31,8 @@ public class Music {
     @Column(name="member_no", nullable = false)
     private int memberNo;
 
+
+
     @Column(name="article_no")
     private int articleNo;
 
