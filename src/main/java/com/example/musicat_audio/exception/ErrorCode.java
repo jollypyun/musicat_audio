@@ -18,6 +18,7 @@ public enum ErrorCode {
     LOGIN_INPUT_INVALID(400, "Login input is invalid"),
     INTERNAL_SERVER_ERROR(500, "Internal Server error"),
     VALIDATION_CHECK_FAIL(400, "Invlaid Input Value"),
+    FILE_UPLOAD_FAIL(500, "File Upload Fail"),
     INVALID_MUSIC_ID(400, "Invalid Music Id");
 
     private int statusCode;

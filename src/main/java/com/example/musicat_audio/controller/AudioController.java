@@ -57,7 +57,7 @@ public class AudioController {
 
     private MusicService musicService;
     private PlaylistService playlistService;
-  
+
     public AudioController(MusicService musicService, PlaylistService playlistService) {
         this.musicService = musicService;
         this.playlistService = playlistService;
@@ -76,18 +76,16 @@ public class AudioController {
         FileManager temp = new FileManager();
         String fileName = "there is no file.";
         Music music = null;
-        try {
-            MetaFile metafile_music = null;
-            MetaFile metafile_image = null;
-            if (file != null)
-                metafile_music = temp.uploadFile(file);
-            if (imagefile != null)
-                metafile_image = temp.uploadFile(imagefile);
 
-            music = musicService.saveMusic(metafile_music, metafile_image, title, memberNo);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        MetaFile metafile_music = null;
+        MetaFile metafile_image = null;
+        if (file != null)
+            metafile_music = temp.uploadFile(file);
+        if (imagefile != null)
+            metafile_image = temp.uploadFile(imagefile);
+
+        music = musicService.saveMusic(metafile_music, metafile_image, title, memberNo);
+
 
         EntityModel<Music> entityModel = EntityModel.of(music);
         entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getFile().getSystemFileName())).withRel("musicResourceURL"));
@@ -150,20 +148,6 @@ public class AudioController {
             return entityModel;
             // 컬렉션으로 반환.
         }).collect(Collectors.toList());
-//        if(musics.isEmpty())
-
-        //EntityModel<Music> entityModel = EntityModel.of(music);
-//        entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getFile().getSystemFileName())).withRel("musicResourceURL"));
-//        entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
-
-//        List<BoardResult> boardList = boardService.getBoardList();
-//        // 각 요소를 EntityModel로 변환.
-//        List<EntityModel> collect = boardList.stream()
-//                .map(board -> EntityModel.of(board,
-//                        getLinkAddress().slash(board.getSeq()).withRel("get"),
-//                        getLinkAddress().slash(board.getSeq()).withRel("delete")))
-//                .collect(Collectors.toList());
-//
     }
 
     @GetMapping("musics/{fileName}")
@@ -179,7 +163,7 @@ public class AudioController {
     public List<EntityModel<Music>> findDetailPlaylist(@PathVariable String playlistKey) {
         log.info("playlistNo : " + playlistKey);
         List<Music> musics = playlistService.showDetailPlaylist(playlistKey);
-        for(Music m:musics) {
+        for (Music m : musics) {
             log.info("what the heck : " + m.getTitle());
         }
         return musics.stream().map(music -> {
@@ -262,9 +246,6 @@ public class AudioController {
     }
 
     public byte[] readByteRange(String location, String filename, long start, long end) throws IOException {
-        //Path path = Paths.get(getFilePath(location), filename);
-        //Path path = Paths.get("C:\\Users\\MZC\\IdeaProjects\\musicat_audio\\src\\main\\resources\\static\\upload\\audio", filename);
-        //Path path = Paths.get("d:\\temp\\spring_uploaded_files", filename);
         Path path = Paths.get("/upload/", filename);
         try (InputStream inputStream = (Files.newInputStream(path));
              ByteArrayOutputStream bufferedOutputStream = new ByteArrayOutputStream()) {

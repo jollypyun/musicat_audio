@@ -1,6 +1,7 @@
 package com.example.musicat_audio.exception;
 
 import com.example.musicat_audio.exception.customException.MusicNotFoundException;
+import com.example.musicat_audio.exception.customException.UploadFileException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -86,8 +87,16 @@ public class MusicatExceptionHandler {
     //////////////////////////////////////////////////////////////////////// 여기서부터 커스텀 에러
 
     @ExceptionHandler(MusicNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessException(final MusicNotFoundException e) {
+    public ResponseEntity<ErrorResponse> handleMusicNotFoundException(final MusicNotFoundException e) {
         log.error("MusicNotFoundException : ", e);
+        final ErrorCode errorCode = e.getErrorCode();
+        final ErrorResponse response = ErrorResponse.of(errorCode);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatusCode()));
+    }
+
+    @ExceptionHandler(UploadFileException.class)
+    public ResponseEntity<ErrorResponse> handleUploadFileException(final UploadFileException e) {
+        log.error("UploadFileException : ", e);
         final ErrorCode errorCode = e.getErrorCode();
         final ErrorResponse response = ErrorResponse.of(errorCode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatusCode()));
