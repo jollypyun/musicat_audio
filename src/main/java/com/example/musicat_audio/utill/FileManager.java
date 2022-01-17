@@ -1,6 +1,8 @@
 package com.example.musicat_audio.utill;
 
 import com.example.musicat_audio.domain.MetaFile;
+import com.example.musicat_audio.exception.customException.UploadFileException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,6 +15,7 @@ import java.nio.file.Paths;
 import java.sql.SQLOutput;
 import java.util.UUID;
 
+@Slf4j
 @Component
 public class FileManager {
 
@@ -20,7 +23,7 @@ public class FileManager {
 
     //@Value("${spring.servlet.multipart.location}")
     //@Value("${file.dir}")
-    //private String uploadPath = "d:\\temp\\spring_uploaded_files";
+
     private String uploadPath = "/upload/";
 
     //만약 저장 경로 폴더가 없으면 생성
@@ -32,12 +35,10 @@ public class FileManager {
         }
     }
     // 파일 저장
-    public MetaFile uploadFile(MultipartFile multipartFile) throws IOException {
+    public MetaFile uploadFile(MultipartFile multipartFile) {
         if(multipartFile.isEmpty()) {
-            throw new RuntimeException("Error : file is empty");
+            throw new UploadFileException("Error : file is empty");
         }
-
-        System.out.println("uploadPath : " + uploadPath);
 
         Path root = Paths.get(uploadPath);
 
@@ -50,11 +51,13 @@ public class FileManager {
         Long fileSize = multipartFile.getSize();
 
 
-        //multipartFile.transferTo(new File(getFullPath(systemFileName)));
-        System.out.println("uploadPath + systemFileName" + this.uploadPath + systemFileName);
-        //multipartFile.transferTo(new File(this.uploadPath + systemFileName));
-        //multipartFile.transferTo(new File("d:\\temp\\spring_uploaded_files\\" + systemFileName));
-        multipartFile.transferTo(new File("/upload/" + systemFileName));
+        try{
+            multipartFile.transferTo(new File("/upload/" + systemFileName));
+        } catch (Exception e) {
+            log.info("fileManager multipartFile transferTo error {}", e);
+            throw new UploadFileException("Error : file transfer fail");
+        }
+
         return new MetaFile(originalFileName, systemFileName, ext, fileSize);
     }
 

@@ -57,7 +57,7 @@ public class AudioController {
 
     private MusicService musicService;
     private PlaylistService playlistService;
-  
+
     public AudioController(MusicService musicService, PlaylistService playlistService) {
         this.musicService = musicService;
         this.playlistService = playlistService;
@@ -76,22 +76,20 @@ public class AudioController {
         FileManager temp = new FileManager();
         String fileName = "there is no file.";
         Music music = null;
-        try {
-            MetaFile metafile_music = null;
-            MetaFile metafile_image = null;
-            if (file != null)
-                metafile_music = temp.uploadFile(file);
-            if (imagefile != null)
-                metafile_image = temp.uploadFile(imagefile);
 
-            music = musicService.saveMusic(metafile_music, metafile_image, title, memberNo);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        MetaFile metafile_music = null;
+        MetaFile metafile_image = null;
+        if (file != null)
+            metafile_music = temp.uploadFile(file);
+        if (imagefile != null)
+            metafile_image = temp.uploadFile(imagefile);
+
+        music = musicService.saveMusic(metafile_music, metafile_image, title, memberNo);
+
 
         EntityModel<Music> entityModel = EntityModel.of(music);
-        entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getFile().getSystemFileName())).withRel("musicResourceURL"));
-        entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
+        entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(null, music.getFile().getSystemFileName())).withRel("musicResourceURL"));
+        entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(null, music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
 
         return entityModel;
     }
@@ -144,48 +142,37 @@ public class AudioController {
             EntityModel<Music> entityModel = EntityModel.of(music);
             // 각 엔티티 모델마다 링크 추가.
             log.info("music : " + music.getFile().getSystemFileName());
-            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getFile().getSystemFileName())).withRel("musicResourceURL"));
-            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
+            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(null, music.getFile().getSystemFileName())).withRel("musicResourceURL"));
+            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(null, music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
 //        );
             return entityModel;
             // 컬렉션으로 반환.
         }).collect(Collectors.toList());
-//        if(musics.isEmpty())
-
-        //EntityModel<Music> entityModel = EntityModel.of(music);
-//        entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getFile().getSystemFileName())).withRel("musicResourceURL"));
-//        entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
-
-//        List<BoardResult> boardList = boardService.getBoardList();
-//        // 각 요소를 EntityModel로 변환.
-//        List<EntityModel> collect = boardList.stream()
-//                .map(board -> EntityModel.of(board,
-//                        getLinkAddress().slash(board.getSeq()).withRel("get"),
-//                        getLinkAddress().slash(board.getSeq()).withRel("delete")))
-//                .collect(Collectors.toList());
-//
     }
 
     @GetMapping("musics/{fileName}")
-    public Mono<ResponseEntity<byte[]>> streamAudio( /* @RequestHeader(value = "Range", required = false) String httpRangeList,*/
+    public Mono<ResponseEntity<byte[]>> streamAudio( @RequestHeader(value = "Range", required = false) String httpRangeList,
             @PathVariable("fileName") String fileName) {
-        //return Mono.just(getContent(AUDIO_PATH, fileName, httpRangeList, "audio"));
-        return Mono.just(getContent(AUDIO_PATH, fileName, null, "audio"));
+        return Mono.just(getContent(AUDIO_PATH, fileName, httpRangeList, "audio"));
+        //return Mono.just(getContent(AUDIO_PATH, fileName, null, "audio"));
 
     }
 
     // 플레이리스트 상세 불러오기
-    @GetMapping("playlists/detail/{playlistNo}")
-    public List<EntityModel<Music>> findDetailPlaylist(@PathVariable String playlistNo) {
-        log.info("playlistNo : " + playlistNo);
-        List<Music> musics = playlistService.showDetailPlaylist(playlistNo);
+    @GetMapping("playlists/detail/{playlistKey}")
+    public List<EntityModel<Music>> findDetailPlaylist(@PathVariable String playlistKey) {
+        log.info("playlistNo : " + playlistKey);
+        List<Music> musics = playlistService.showDetailPlaylist(playlistKey);
+        for (Music m : musics) {
+            log.info("what the heck : " + m.getTitle());
+        }
         return musics.stream().map(music -> {
             // Java Stream을 이용하여 각 Music 객체의 엔티티 모델 생성.
             EntityModel<Music> entityModel = EntityModel.of(music);
             // 각 엔티티 모델마다 링크 추가.
             log.info("music : " + music.getFile().getSystemFileName());
-            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getFile().getSystemFileName())).withRel("musicResourceURL"));
-            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
+            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(null, music.getFile().getSystemFileName())).withRel("musicResourceURL"));
+            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(null, music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
 //        );
             return entityModel;
             // 컬렉션으로 반환.
@@ -204,8 +191,8 @@ public class AudioController {
             EntityModel<Music> entityModel = EntityModel.of(music);
             // 각 엔티티 모델마다 링크 추가.
             log.info("music : " + music.getFile().getSystemFileName());
-            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getFile().getSystemFileName())).withRel("musicResourceURL"));
-            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
+            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(null, music.getFile().getSystemFileName())).withRel("musicResourceURL"));
+            entityModel.add(linkTo(methodOn(this.getClass()).streamAudio(null, music.getThumbnail().getFile().getSystemFileName())).withRel("imageResourceURL"));
 //        );
             return entityModel;
             // 컬렉션으로 반환.
@@ -219,7 +206,7 @@ public class AudioController {
         byte[] data;
         Long fileSize;
         String fileType = fileName.substring(fileName.lastIndexOf(".") + 1);
-        //String tempPath = new String("d:\\temp\\spring_uploaded_files");
+
         String tempPath = new String("/upload/");
         try {
             fileSize = Optional.ofNullable(fileName)
@@ -259,9 +246,6 @@ public class AudioController {
     }
 
     public byte[] readByteRange(String location, String filename, long start, long end) throws IOException {
-        //Path path = Paths.get(getFilePath(location), filename);
-        //Path path = Paths.get("C:\\Users\\MZC\\IdeaProjects\\musicat_audio\\src\\main\\resources\\static\\upload\\audio", filename);
-        //Path path = Paths.get("d:\\temp\\spring_uploaded_files", filename);
         Path path = Paths.get("/upload/", filename);
         try (InputStream inputStream = (Files.newInputStream(path));
              ByteArrayOutputStream bufferedOutputStream = new ByteArrayOutputStream()) {
