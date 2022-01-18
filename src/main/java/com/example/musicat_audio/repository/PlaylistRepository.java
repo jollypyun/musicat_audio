@@ -30,6 +30,10 @@ public class PlaylistRepository {
         return info;
     }
 
+    public void saveNewCurrentPlaylist(Playlist playlist){
+        em.persist(playlist);
+    }
+
     public MetaFile saveMetafileReturnFileNo(MetaFile meta) {
         String sql = "INSERT INTO metafile(originalfilename, systemfilename, filesize, filetype) VALUES(?,?,?,?)";
         em.createNativeQuery(sql)

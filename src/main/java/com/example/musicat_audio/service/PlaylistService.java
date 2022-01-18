@@ -56,10 +56,11 @@ public class PlaylistService {
         log.info("playlistKey : " + playlistKey);
         return playlist;
     }
-
     // 현재 재생목록 생성
+    @Transactional
     public void insertNow(Playlist playlist) {
-        this.playlistRepository.savePlaylist(playlist);
+        //this.playlistRepository.savePlaylist(playlist);
+        this.playlistRepository.saveNewCurrentPlaylist(playlist);
     }
 
 
