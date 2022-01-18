@@ -107,7 +107,7 @@ public class PlaylistController {
 
     // 플레이리스트 수정
     @PostMapping("playlists/update")
-    public int changePlaylistName(@RequestParam(value = "image", required = false)MultipartFile img, @RequestParam("playlistKey")String playlistKey, @RequestParam("title") String title) {
+    public Integer changePlaylistName(@RequestParam(value = "image", required = false)MultipartFile img, @RequestParam("playlistKey")String playlistKey, @RequestParam("title") String title) {
         FileManager temp = new FileManager();
         String fileName = "there is no file.";
         Playlist playlist = null;
