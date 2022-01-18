@@ -145,6 +145,15 @@ public class PlaylistController {
         return now;
     }
 
+    // 현재 재생목록 생성
+    @PostMapping("playlists/makeNow/{memberNo}")
+    public void makeNowPlay(@PathVariable("memberNo") Integer memberNo) {
+        log.info("JOIN member : " + memberNo);
+        String playlistKey = memberNo + "pl1";
+        String playlistName = "현재 재생목록";
+        Playlist nowPlaying = new Playlist(playlistKey, playlistName, memberNo);
+        this.playlistService.insertNow(nowPlaying);
+    }
 
 
     private ResponseEntity<byte[]> getContent(String location, String fileName, String range, String contentTypePrefix) {

@@ -57,6 +57,12 @@ public class PlaylistService {
         return playlist;
     }
 
+    // 현재 재생목록 생성
+    public void insertNow(Playlist playlist) {
+        this.playlistRepository.savePlaylist(playlist);
+    }
+
+
     // 특정 플레이리스트 안의 곡 빼기
     @Transactional
     public void removeMusicFromPlaylist(String playlistKey, List<Long> deleteList) {
