@@ -12,25 +12,36 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @Slf4j
 //@WebMvcTest
+@AutoConfigureRestDocs
+@AutoConfigureMockMvc
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 class MusicatAudioApplicationTests {
 
@@ -53,6 +64,9 @@ class MusicatAudioApplicationTests {
 
 	private MockMvc mockMvc;
 
+	@MockBean
+	private PlaylistService playlistService;
+
 	@BeforeEach
 	public void setUp(RestDocumentationContextProvider restDocumentation) {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
@@ -65,6 +79,18 @@ class MusicatAudioApplicationTests {
 		this.mockMvc.perform(get("/api/hello"))
 				.andDo(print())
 				.andExpect(status().isOk());
+	}
+
+	@Test
+	void createTest() throws Exception {
+		this.mockMvc.perform(post("/api/playlists/makeNow/{memberNo}", 2)
+				.content("{\"memberNo\" : 2}")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("post-create",
+						requestFields(
+								fieldWithPath("memberNo").description("멤버 번호")
+						)));
 	}
 
 }
