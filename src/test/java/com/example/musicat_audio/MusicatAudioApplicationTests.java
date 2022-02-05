@@ -24,33 +24,45 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.persistence.EntityManager;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-// @SpringBootTest
+@SpringBootTest
 @Slf4j
-@WebMvcTest
+//@WebMvcTest
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 class MusicatAudioApplicationTests {
 
-	@Autowired
-	private MockMvc mockMvc;
+//	@Autowired
+//	private MockMvc mockMvc;
 
 	@Autowired
 	private EntityManager em;
 
+//	@BeforeEach
+//	public void setting(WebApplicationContext webApplicationContext,
+//						RestDocumentationContextProvider restDocumentation) {
+//		this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+//				.apply(documentationConfiguration(restDocumentation))
+//				.build();
+//	}
+
+	@Autowired
+	private WebApplicationContext context;
+
+	private MockMvc mockMvc;
+
 	@BeforeEach
-	public void setting(WebApplicationContext webApplicationContext,
-						RestDocumentationContextProvider restDocumentation) {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-				.apply(documentationConfiguration(restDocumentation))
+	public void setUp(RestDocumentationContextProvider restDocumentation) {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
+				.apply(documentationConfiguration(restDocumentation))  // (2)
 				.build();
 	}
 
 	@Test
-	void Test1() throws Exception{
-		this.mockMvc.perform(post("hello"))
+	void Test1() throws Exception {
+		this.mockMvc.perform(get("/api/hello"))
 				.andDo(print())
 				.andExpect(status().isOk());
 	}

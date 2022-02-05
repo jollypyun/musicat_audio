@@ -63,12 +63,13 @@ public class AudioController {
         this.playlistService = playlistService;
     }
 
+    // 연결 확인용
     @GetMapping("hello")
     public String index() {
         return "hello";
     }
 
-    @PostMapping(value = "musics/uploadFile")
+    @PostMapping(value = "music")
     public EntityModel<Music> upload(@RequestParam("audio") MultipartFile file, @RequestParam("image") MultipartFile imagefile, @RequestParam("title") String title,
                                      @RequestParam("memberNo") /*@Min(6)*/ int memberNo) {
 
@@ -94,22 +95,7 @@ public class AudioController {
         return entityModel;
     }
 
-    @DeleteMapping("musics/deleteByArticleNo/{articleNo}")
-    public ResponseEntity<String> deleteMusicByArticleNo(@PathVariable("articleNo") int articleNo) {
-
-        musicService.deleteMusicByArticleNo(articleNo);
-
-        return new ResponseEntity<>("delete success", HttpStatus.OK);
-    }
-
-    @DeleteMapping("musics/deleteById/{musicId}")
-    public ResponseEntity<String> deleteMusicByMusicId(@PathVariable("musicId") Long musicId) {
-
-        musicService.deleteMusicByMusicId(musicId);
-        return new ResponseEntity<>("delete success", HttpStatus.OK);
-    }
-
-    @PutMapping("musics/connectToArticle/{musicId}/{articleNo}")
+    @PutMapping("music/{musicId}/{articleNo}")
     public ResponseEntity<String> connectToArticle(@PathVariable("musicId") Long musicId, @PathVariable("articleNo") int articleNo) {
 
         musicService.connectToArticle(musicId, articleNo);
@@ -117,22 +103,7 @@ public class AudioController {
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
 
-
-    @GetMapping("musics/find/{id}")
-    public EntityModel<Music> findMusic(@PathVariable("id") Long musicId) {
-
-        Music music = musicService.findMusic(musicId);
-
-        if (music == null)
-            throw new MusicNotFoundException("there is no music");
-
-        EntityModel<Music> entityModel = EntityModel.of(music);
-        entityModel.add(Link.of("/whatever", "list"));
-        return entityModel;
-        //return "http://localhost:20000/api/musics/find/" + music.getFile().getSystemFileName();
-    }
-
-    @GetMapping("musics/findMusics/{articleNo}")
+    @GetMapping("musics/article/{articleNo}")
     public List<EntityModel<Music>> findMusics(@PathVariable int articleNo) {
 
         List<Music> musics = musicService.findMusics(articleNo);
@@ -150,16 +121,45 @@ public class AudioController {
         }).collect(Collectors.toList());
     }
 
-    @GetMapping("musics/{fileName}")
+    @DeleteMapping("musics/article/{articleNo}")
+    public ResponseEntity<String> deleteMusicByArticleNo(@PathVariable("articleNo") int articleNo) {
+
+        musicService.deleteMusicByArticleNo(articleNo);
+
+        return new ResponseEntity<>("delete success", HttpStatus.OK);
+    }
+
+    @GetMapping("musics/file/{fileName}")
     public Mono<ResponseEntity<byte[]>> streamAudio( @RequestHeader(value = "Range", required = false) String httpRangeList,
-            @PathVariable("fileName") String fileName) {
+                                                     @PathVariable("fileName") String fileName) {
         return Mono.just(getContent(AUDIO_PATH, fileName, httpRangeList, "audio"));
         //return Mono.just(getContent(AUDIO_PATH, fileName, null, "audio"));
 
     }
 
+    @GetMapping("musics/id/{id}")
+    public EntityModel<Music> findMusic(@PathVariable("id") Long musicId) {
+
+        Music music = musicService.findMusic(musicId);
+
+        if (music == null)
+            throw new MusicNotFoundException("there is no music");
+
+        EntityModel<Music> entityModel = EntityModel.of(music);
+        entityModel.add(Link.of("/whatever", "list"));
+        return entityModel;
+        //return "http://localhost:20000/api/musics/find/" + music.getFile().getSystemFileName();
+    }
+
+    @DeleteMapping("musics/id/{musicId}")
+    public ResponseEntity<String> deleteMusicByMusicId(@PathVariable("musicId") Long musicId) {
+
+        musicService.deleteMusicByMusicId(musicId);
+        return new ResponseEntity<>("delete success", HttpStatus.OK);
+    }
+
     // 플레이리스트 상세 불러오기
-    @GetMapping("playlists/detail/{playlistKey}")
+    @GetMapping("playlists/{playlistKey}")
     public List<EntityModel<Music>> findDetailPlaylist(@PathVariable String playlistKey) {
         log.info("playlistNo : " + playlistKey);
         List<Music> musics = playlistService.showDetailPlaylist(playlistKey);
@@ -180,7 +180,7 @@ public class AudioController {
     }
 
     // 플레이리스트안에 곡 넣기
-    @PostMapping("playlists/push")
+    @PostMapping("playlists/musics")
     public List<EntityModel<Music>> pushMusicTo(@RequestBody Map<String, Object> map) {
         log.info("map : " + map);
         Playlist playlist = playlistService.addMusicsToPlaylist(map);
