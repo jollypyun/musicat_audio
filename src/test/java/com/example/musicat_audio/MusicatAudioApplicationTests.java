@@ -138,4 +138,31 @@ class MusicatAudioApplicationTests {
 				.andDo(print());
 	}
 
+	@Test
+	void findPlaylistTest() throws Exception {
+		this.mockMvc.perform(get("/api/playlists/{memberNo}", 2)
+				.accept(MediaType.APPLICATION_JSON_VALUE)
+				.content("{\"memberNo\" : 2}")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("findPlaylistofMember",
+						pathParameters(
+								parameterWithName("memberNo").description("멤버 번호")
+						)))
+				.andDo(print());
+	}
+
+	@Test
+	void findDetailPlaylistTest() throws Exception {
+		this.mockMvc.perform(get("/api/detailPlaylists/{playlistKey}", "1pl1")
+				.accept(MediaType.APPLICATION_JSON_VALUE)
+				.content("{\"playlistKey\" : \"1pl1\"}")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("detailPlaylist",
+						pathParameters(
+								parameterWithName("playlistKey").description("플레이리스트 식별 문자열")
+						)))
+				.andDo(print());
+	}
 }

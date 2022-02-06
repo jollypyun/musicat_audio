@@ -159,7 +159,7 @@ public class AudioController {
     }
 
     // 플레이리스트 상세 불러오기
-    @GetMapping("playlists/{playlistKey}")
+    @GetMapping("detailPlaylists/{playlistKey}")
     public List<EntityModel<Music>> findDetailPlaylist(@PathVariable String playlistKey) {
         log.info("playlistNo : " + playlistKey);
         List<Music> musics = playlistService.showDetailPlaylist(playlistKey);
