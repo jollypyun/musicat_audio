@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -19,23 +20,31 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 
+import java.io.File;
+import static org.assertj.core.api.BDDAssumptions.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static springfox.documentation.builders.RequestHandlerSelectors.any;
 
 @SpringBootTest
 @Slf4j
@@ -82,15 +91,51 @@ class MusicatAudioApplicationTests {
 	}
 
 	@Test
-	void createTest() throws Exception {
+	void nowTest() throws Exception {
+		Playlist playlist = new Playlist("2pl1", "현재", 2);
 		this.mockMvc.perform(post("/api/playlists/makeNow/{memberNo}", 2)
+						.accept(MediaType.APPLICATION_JSON_VALUE)
 				.content("{\"memberNo\" : 2}")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("post-now",
+						pathParameters(
+								parameterWithName("memberNo").description("멤버 번호")
+						)))
+				.andDo(print());
+	}
+
+	@Test // 현재 안 되고 있다.
+	void createTest() throws Exception {
+		final Playlist playlist = new Playlist("2pl4","지금", 2);
+
+		this.mockMvc.perform(post("/api/playlists/create")
+				.content("{\"playlistName\" : \"지금\", \n\"image\" : \"C:/Users/lucas/Desktop/개인/블로그/rest.png\", \n\"memberNo\" : 2}")
+						.accept(MediaType.APPLICATION_JSON_VALUE)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andDo(document("post-create",
 						requestFields(
+								fieldWithPath("playlistName").description("플레이리스트 이름"),
+								fieldWithPath("image").description("이미지").optional(),
 								fieldWithPath("memberNo").description("멤버 번호")
-						)));
+						)))
+				.andDo(print());
+	}
+
+	@Test
+	void deletePlaylistTest() throws Exception {
+		this.mockMvc.perform(delete("/api/playlists/delete/{memberNo}/{playlistKey}", 2, "2pl2")
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+				.content("{\"memberNo\" : 2, \n\"playlistKey\" : \"2pl2\"}")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("delete-deletePlaylist",
+						pathParameters(
+								parameterWithName("memberNo").description("멤버 번호"),
+								parameterWithName("playlistKey").description("플레이리스트 식별 문자")
+						)))
+				.andDo(print());
 	}
 
 }
