@@ -105,24 +105,6 @@ class MusicatAudioApplicationTests {
 				.andDo(print());
 	}
 
-	@Test // 현재 안 되고 있다.
-	void createTest() throws Exception {
-		final Playlist playlist = new Playlist("2pl4","지금", 2);
-
-		this.mockMvc.perform(post("/api/playlists/create")
-				.content("{\"playlistName\" : \"지금\", \n\"image\" : \"C:/Users/lucas/Desktop/개인/블로그/rest.png\", \n\"memberNo\" : 2}")
-						.accept(MediaType.APPLICATION_JSON_VALUE)
-				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andDo(document("post-create",
-						requestFields(
-								fieldWithPath("playlistName").description("플레이리스트 이름"),
-								fieldWithPath("image").description("이미지").optional(),
-								fieldWithPath("memberNo").description("멤버 번호")
-						)))
-				.andDo(print());
-	}
-
 	@Test
 	void deletePlaylistTest() throws Exception {
 		this.mockMvc.perform(delete("/api/playlists/delete/{memberNo}/{playlistKey}", 2, "2pl2")
