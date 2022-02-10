@@ -6,6 +6,8 @@ import com.example.musicat_audio.service.PlaylistService;
 import lombok.extern.slf4j.Slf4j;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -165,4 +167,84 @@ class MusicatAudioApplicationTests {
 						)))
 				.andDo(print());
 	}
+
+
+
+	////////////////////////////////////// 오디오 관련 테스트 (예나)
+	@Test
+	@DisplayName("게시글 번호로 음악 찾기")
+	void findMusicsByArticleTest() throws Exception {
+		this.mockMvc.perform(get("/api/musics/article/{articleNo}",135)
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+						.content("{\"articleNo\" : 135")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("findMusicByArticleNo",
+						pathParameters(
+								parameterWithName("articleNo").description("게시글 번호")
+						)))
+				.andDo(print());
+	}
+
+	@Test
+	@DisplayName("게시글 번호로 음악 삭제하기")
+	void deleteMusicByArticleNoTest() throws Exception {
+		this.mockMvc.perform(delete("/api/musics/article/{articleNo}", 156)
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+						.content("{\"articleNo\" : 156}")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("deleteMusicByArticleNoTest",
+						pathParameters(
+								parameterWithName("articleNo").description("게시글 일련번호")
+						)))
+				.andDo(print());
+	}
+
+	@Test
+	@DisplayName("음악 ID로 음악 찾기")
+	void findMusicsByMusicIDTest() throws Exception {
+		this.mockMvc.perform(get("/api/musics/id/{id}",162)
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+						.content("{\"id\" : 162")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("findMusicByMusicID",
+						pathParameters(
+								parameterWithName("id").description("음악 일련번호")
+						)))
+				.andDo(print());
+	}
+
+	@Test
+	@DisplayName("음악 ID로 음악 삭제하기")
+	void deleteMusicByMusicIDTest() throws Exception {
+		this.mockMvc.perform(delete("/api/musics/id/{musicId}", 160)
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+						.content("{\"musicId\" : 160}")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("deleteMusicByMusicIDTest",
+						pathParameters(
+								parameterWithName("id").description("음악 일련번호")
+						)))
+				.andDo(print());
+	}
+
+	@Test // 이거 안됨
+	@Disabled
+	@DisplayName("파일 이름으로 audio 찾기")
+	void findMusicsByFileNameTest() throws Exception {
+		this.mockMvc.perform(get("/api/musics/file/{fileName}","5e281650-e929-4f20-b721-51e9502fb661.audio")
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+						.content("{\"fileName\" : 5e281650-e929-4f20-b721-51e9502fb661.audio")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("findMusicByFileName",
+						pathParameters(
+								parameterWithName("fileName").description("파일명")
+						)))
+				.andDo(print());
+	}
+
 }
