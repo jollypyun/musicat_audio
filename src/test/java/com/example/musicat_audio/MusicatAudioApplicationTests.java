@@ -31,6 +31,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityManager;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.assertj.core.api.BDDAssumptions.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -91,7 +96,7 @@ class MusicatAudioApplicationTests {
 	}
 
 	@Test
-	void nowTest() throws Exception {
+	void makeNowPlayTest() throws Exception {
 		Playlist playlist = new Playlist("2pl1", "현재", 2);
 		this.mockMvc.perform(post("/api/playlists/makeNow/{memberNo}", 2)
 						.accept(MediaType.APPLICATION_JSON_VALUE)
@@ -106,7 +111,7 @@ class MusicatAudioApplicationTests {
 	}
 
 	@Test // 현재 안 되고 있다.
-	void createTest() throws Exception {
+	void createPliTest() throws Exception {
 		final Playlist playlist = new Playlist("2pl4","지금", 2);
 
 		this.mockMvc.perform(post("/api/playlists/create")
@@ -124,7 +129,7 @@ class MusicatAudioApplicationTests {
 	}
 
 	@Test
-	void deletePlaylistTest() throws Exception {
+	void deletePliTest() throws Exception {
 		this.mockMvc.perform(delete("/api/playlists/delete/{memberNo}/{playlistKey}", 2, "2pl2")
 						.accept(MediaType.APPLICATION_JSON_VALUE)
 				.content("{\"memberNo\" : 2, \n\"playlistKey\" : \"2pl2\"}")
@@ -165,4 +170,62 @@ class MusicatAudioApplicationTests {
 						)))
 				.andDo(print());
 	}
+
+	@Test
+	void pushPlaylistToNowTest() throws Exception {
+		Playlist nowPlaying = new Playlist("2pl1", 2);
+		when(playlistService.addPlaylistToNow("2pl1", "2pl3")).thenReturn(nowPlaying);
+
+		this.mockMvc.perform(post("/api/playlists/pushNow")
+				.accept(MediaType.APPLICATION_JSON_VALUE)
+				.content("{\"memberNo\" : 2, \n\"playlistKey\" : \"2pl3\"}")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("pushPlaylistToNow",
+						requestFields(
+								fieldWithPath("memberNo").description("멤버 번호"),
+								fieldWithPath("playlistKey").description("플레이리스트 식별 문자열")
+						)))
+				.andDo(print());
+	}
+
+	@Test
+	void pullMusicTest() throws Exception {
+		String playlistKey = "2pl2";
+
+		this.mockMvc.perform(delete("/api/playlists/pull/{playlistKey}/{musicNos}", "2pl2", "[25]")
+				.accept(MediaType.APPLICATION_JSON_VALUE)
+				.content("{\"playlistKey\" : \"2pl2\", \n\"musicNos\" : \"[25]\"}")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("pullMusic",
+						pathParameters(
+								parameterWithName("playlistKey").description("플레이리스트 식별 문자열"),
+								parameterWithName("musicNos").description("음악 번호")
+						)))
+				.andDo(print());
+	}
+
+//	@Test
+//	void pushMusicTo() throws Exception {
+//		Map<String, Object> map = new HashMap<>();
+//		List<Long> list = new ArrayList<>();
+//		Playlist playlist = new Playlist("1pl2", 1);
+//		list.add(46L);
+//		map.put("playlistKey", "1pl2");
+//		map.put("musicNos", list);
+//		when(playlistService.addMusicsToPlaylist(map)).thenReturn(playlist);
+//		//when(playlistService.showDetailPlaylist("1pl2")).thenReturn(list);
+//
+//		this.mockMvc.perform(post("/api/playlists/musics")
+//				.accept(MediaType.APPLICATION_JSON_VALUE)
+//				.content("{\"playlistKey\" : \"1pl2\", \n\"musicNos\" : [46]}")
+//				.contentType(MediaType.APPLICATION_JSON))
+//				.andExpect(status().isOk())
+//				.andDo(document("pushMusicTo",
+//						requestFields(
+//								fieldWithPath("map").description("일단 테스트")
+//						)))
+//				.andDo(print());
+//	}
 }
