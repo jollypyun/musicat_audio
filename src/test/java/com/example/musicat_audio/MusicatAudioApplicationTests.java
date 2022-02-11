@@ -6,6 +6,8 @@ import com.example.musicat_audio.service.PlaylistService;
 import lombok.extern.slf4j.Slf4j;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -31,6 +33,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityManager;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.assertj.core.api.BDDAssumptions.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -91,7 +98,7 @@ class MusicatAudioApplicationTests {
 	}
 
 	@Test
-	void nowTest() throws Exception {
+	void makeNowPlayTest() throws Exception {
 		Playlist playlist = new Playlist("2pl1", "현재", 2);
 		this.mockMvc.perform(post("/api/playlists/makeNow/{memberNo}", 2)
 						.accept(MediaType.APPLICATION_JSON_VALUE)
@@ -105,8 +112,26 @@ class MusicatAudioApplicationTests {
 				.andDo(print());
 	}
 
+	@Test // 현재 안 되고 있다.
+	void createPliTest() throws Exception {
+		final Playlist playlist = new Playlist("2pl4","지금", 2);
+
+		this.mockMvc.perform(post("/api/playlists/create")
+				.content("{\"playlistName\" : \"지금\", \n\"image\" : \"C:/Users/lucas/Desktop/개인/블로그/rest.png\", \n\"memberNo\" : 2}")
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("post-create",
+						requestFields(
+								fieldWithPath("playlistName").description("플레이리스트 이름"),
+								fieldWithPath("image").description("이미지").optional(),
+								fieldWithPath("memberNo").description("멤버 번호")
+						)))
+				.andDo(print());
+	}
+
 	@Test
-	void deletePlaylistTest() throws Exception {
+	void deletePliTest() throws Exception {
 		this.mockMvc.perform(delete("/api/playlists/delete/{memberNo}/{playlistKey}", 2, "2pl2")
 						.accept(MediaType.APPLICATION_JSON_VALUE)
 				.content("{\"memberNo\" : 2, \n\"playlistKey\" : \"2pl2\"}")
@@ -144,6 +169,141 @@ class MusicatAudioApplicationTests {
 				.andDo(document("detailPlaylist",
 						pathParameters(
 								parameterWithName("playlistKey").description("플레이리스트 식별 문자열")
+						)))
+				.andDo(print());
+	}
+
+	@Test
+	void pushPlaylistToNowTest() throws Exception {
+		Playlist nowPlaying = new Playlist("2pl1", 2);
+		when(playlistService.addPlaylistToNow("2pl1", "2pl3")).thenReturn(nowPlaying);
+
+		this.mockMvc.perform(post("/api/playlists/pushNow")
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+						.content("{\"memberNo\" : 2, \n\"playlistKey\" : \"2pl3\"}")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("pushPlaylistToNow",
+						requestFields(
+								fieldWithPath("memberNo").description("멤버 번호"),
+								fieldWithPath("playlistKey").description("플레이리스트 식별 문자열")
+						)))
+				.andDo(print());
+	}
+
+	@Test
+	void pullMusicTest() throws Exception {
+		String playlistKey = "2pl2";
+
+		this.mockMvc.perform(delete("/api/playlists/pull/{playlistKey}/{musicNos}", "2pl2", "[25]")
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+						.content("{\"playlistKey\" : \"2pl2\", \n\"musicNos\" : \"[25]\"}")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("pullMusic",
+						pathParameters(
+								parameterWithName("playlistKey").description("플레이리스트 식별 문자열"),
+								parameterWithName("musicNos").description("음악 번호")
+						)))
+				.andDo(print());
+	}
+
+//	@Test
+//	void pushMusicTo() throws Exception {
+//		Map<String, Object> map = new HashMap<>();
+//		List<Long> list = new ArrayList<>();
+//		Playlist playlist = new Playlist("1pl2", 1);
+//		list.add(46L);
+//		map.put("playlistKey", "1pl2");
+//		map.put("musicNos", list);
+//		when(playlistService.addMusicsToPlaylist(map)).thenReturn(playlist);
+//		//when(playlistService.showDetailPlaylist("1pl2")).thenReturn(list);
+//
+//		this.mockMvc.perform(post("/api/playlists/musics")
+//				.accept(MediaType.APPLICATION_JSON_VALUE)
+//				.content("{\"playlistKey\" : \"1pl2\", \n\"musicNos\" : [46]}")
+//				.contentType(MediaType.APPLICATION_JSON))
+//				.andExpect(status().isOk())
+//				.andDo(document("pushMusicTo",
+//						requestFields(
+//								fieldWithPath("map").description("일단 테스트")
+//						)))
+//				.andDo(print());
+//	}
+
+	////////////////////////////////////// 오디오 관련 테스트 (예나)
+	@Test
+	@DisplayName("게시글 번호로 음악 찾기")
+	void findMusicsByArticleTest() throws Exception {
+		this.mockMvc.perform(get("/api/musics/article/{articleNo}",135)
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+						.content("{\"articleNo\" : 135")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("findMusicByArticleNo",
+						pathParameters(
+								parameterWithName("articleNo").description("게시글 번호")
+						)))
+				.andDo(print());
+	}
+
+	@Test
+	@DisplayName("게시글 번호로 음악 삭제하기")
+	void deleteMusicByArticleNoTest() throws Exception {
+		this.mockMvc.perform(delete("/api/musics/article/{articleNo}", 156)
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+						.content("{\"articleNo\" : 156}")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("deleteMusicByArticleNoTest",
+						pathParameters(
+								parameterWithName("articleNo").description("게시글 일련번호")
+						)))
+				.andDo(print());
+	}
+
+	@Test
+	@DisplayName("음악 ID로 음악 찾기")
+	void findMusicsByMusicIDTest() throws Exception {
+		this.mockMvc.perform(get("/api/musics/id/{id}",162)
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+						.content("{\"id\" : 162")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("findMusicByMusicID",
+						pathParameters(
+								parameterWithName("id").description("음악 일련번호")
+						)))
+				.andDo(print());
+	}
+
+	@Test
+	@DisplayName("음악 ID로 음악 삭제하기")
+	void deleteMusicByMusicIDTest() throws Exception {
+		this.mockMvc.perform(delete("/api/musics/id/{musicId}", 160)
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+						.content("{\"musicId\" : 160}")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("deleteMusicByMusicIDTest",
+						pathParameters(
+								parameterWithName("id").description("음악 일련번호")
+						)))
+				.andDo(print());
+	}
+
+	@Test // 이거 안됨
+	@Disabled
+	@DisplayName("파일 이름으로 audio 찾기")
+	void findMusicsByFileNameTest() throws Exception {
+		this.mockMvc.perform(get("/api/musics/file/{fileName}","5e281650-e929-4f20-b721-51e9502fb661.audio")
+						.accept(MediaType.APPLICATION_JSON_VALUE)
+						.content("{\"fileName\" : 5e281650-e929-4f20-b721-51e9502fb661.audio")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("findMusicByFileName",
+						pathParameters(
+								parameterWithName("fileName").description("파일명")
 						)))
 				.andDo(print());
 	}
