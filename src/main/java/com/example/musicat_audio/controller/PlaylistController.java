@@ -45,6 +45,7 @@ public class PlaylistController {
         return Mono.just(getContent(IMAGE_PATH, systemfilename, null, "image"));
     }
 
+
     // 플레이리스트 생성
     @PostMapping("playlists/create")
     public ResponseEntity<Playlist> createPli(@RequestParam("playlistName") String title, @RequestParam("image") MultipartFile file, @RequestParam("memberNo") int memberNo) {

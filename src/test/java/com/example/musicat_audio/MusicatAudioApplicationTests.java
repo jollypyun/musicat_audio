@@ -20,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -27,6 +28,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,12 +48,13 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static springfox.documentation.builders.RequestHandlerSelectors.any;
 
@@ -114,20 +119,23 @@ class MusicatAudioApplicationTests {
 
 	@Test // 현재 안 되고 있다.
 	void createPliTest() throws Exception {
-		final Playlist playlist = new Playlist("2pl4","지금", 2);
+		int memberNo = 1;
+		List<Playlist> list = new ArrayList<>();
+		list.add(new Playlist("1pl3", memberNo));
+		when(playlistService.showPlaylist(memberNo)).thenReturn(list);
 
-		this.mockMvc.perform(post("/api/playlists/create")
-				.content("{\"playlistName\" : \"지금\", \n\"image\" : \"C:/Users/lucas/Desktop/개인/블로그/rest.png\", \n\"memberNo\" : 2}")
-						.accept(MediaType.APPLICATION_JSON_VALUE)
-				.contentType(MediaType.APPLICATION_JSON))
+		MockMultipartFile image = new MockMultipartFile("image", "C:/Users/lucas/Desktop/개인/블로그/spring.png", "image/png", "<<png data>>".getBytes());
+
+		this.mockMvc.perform(multipart("/api/playlists/create")
+				.file(image)
+				.param("playlistName", "지금")
+				.param("memberNo", "1"))
 				.andExpect(status().isOk())
-				.andDo(document("post-create",
-						requestFields(
-								fieldWithPath("playlistName").description("플레이리스트 이름"),
-								fieldWithPath("image").description("이미지").optional(),
-								fieldWithPath("memberNo").description("멤버 번호")
-						)))
-				.andDo(print());
+				.andDo(document("createPli",
+						requestParameters(
+								parameterWithName("playlistName").description("플레이리스트 이름"),
+								parameterWithName("memberNo").description("회원 번호")
+						)));
 	}
 
 	@Test
@@ -175,20 +183,21 @@ class MusicatAudioApplicationTests {
 
 	@Test
 	void pushPlaylistToNowTest() throws Exception {
-		Playlist nowPlaying = new Playlist("2pl1", 2);
-		when(playlistService.addPlaylistToNow("2pl1", "2pl3")).thenReturn(nowPlaying);
+		String playlistKey = "2pl3";
+		String memberNo = "2";
+		MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+		map.set("playlistKey", playlistKey);
+		map.set("memberNo", memberNo);
+
 
 		this.mockMvc.perform(post("/api/playlists/pushNow")
-						.accept(MediaType.APPLICATION_JSON_VALUE)
-						.content("{\"memberNo\" : 2, \n\"playlistKey\" : \"2pl3\"}")
-						.contentType(MediaType.APPLICATION_JSON))
+				.params(map))
 				.andExpect(status().isOk())
 				.andDo(document("pushPlaylistToNow",
-						requestFields(
-								fieldWithPath("memberNo").description("멤버 번호"),
-								fieldWithPath("playlistKey").description("플레이리스트 식별 문자열")
-						)))
-				.andDo(print());
+						requestParameters(
+								parameterWithName("playlistKey").description("플레이리스트 식별 문자열"),
+								parameterWithName("memberNo").description("멤버 번호")
+						)));
 	}
 
 	@Test
@@ -208,28 +217,20 @@ class MusicatAudioApplicationTests {
 				.andDo(print());
 	}
 
-//	@Test
-//	void pushMusicTo() throws Exception {
-//		Map<String, Object> map = new HashMap<>();
-//		List<Long> list = new ArrayList<>();
-//		Playlist playlist = new Playlist("1pl2", 1);
-//		list.add(46L);
-//		map.put("playlistKey", "1pl2");
-//		map.put("musicNos", list);
-//		when(playlistService.addMusicsToPlaylist(map)).thenReturn(playlist);
-//		//when(playlistService.showDetailPlaylist("1pl2")).thenReturn(list);
-//
-//		this.mockMvc.perform(post("/api/playlists/musics")
-//				.accept(MediaType.APPLICATION_JSON_VALUE)
-//				.content("{\"playlistKey\" : \"1pl2\", \n\"musicNos\" : [46]}")
-//				.contentType(MediaType.APPLICATION_JSON))
-//				.andExpect(status().isOk())
-//				.andDo(document("pushMusicTo",
-//						requestFields(
-//								fieldWithPath("map").description("일단 테스트")
-//						)))
-//				.andDo(print());
-//	}
+	@Test
+	void pushMusicTo() throws Exception {
+
+		this.mockMvc.perform(post("/api/playlists/musics")
+				.param("playlistKey", "1pl2")
+				.param("musicNos", "[46]"))
+				.andExpect(status().isOk())
+				.andDo(document("pushMusicTo",
+						requestParameters(
+								parameterWithName("playlistKey").description("플레이리스트 식별 문자열"),
+								parameterWithName("musicNos").description("음악 리스트")
+						)));
+
+	}
 
 	////////////////////////////////////// 오디오 관련 테스트 (예나)
 	@Test
