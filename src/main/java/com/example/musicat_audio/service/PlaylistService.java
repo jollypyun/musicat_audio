@@ -6,7 +6,6 @@ import com.example.musicat_audio.domain.Playlist;
 import com.example.musicat_audio.domain.PlaylistImage;
 import com.example.musicat_audio.repository.MusicRepository;
 import com.example.musicat_audio.repository.PlaylistRepository;
-//import com.example.musicat_audio.repository.PlaylistRepository2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,9 +18,6 @@ import java.util.Map;
 @Service
 @Slf4j
 public class PlaylistService {
-
-    //@Autowired
-    //private PlaylistRepository2 playlistRepository2;
 
     private final PlaylistRepository playlistRepository;
     private final MusicRepository musicRepository;
