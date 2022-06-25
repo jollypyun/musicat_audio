@@ -1,5 +1,6 @@
 package com.example.musicat_audio.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,7 +37,8 @@ public class Music {
     @Column(name="article_no")
     private int articleNo;
 
-    @JsonManagedReference
+    //@JsonManagedReference
+    @JsonBackReference
     @OneToMany(mappedBy = "musicNo", cascade = CascadeType.REMOVE)
     private List<PlaylistNode> playlistNodes = new ArrayList<>();
 

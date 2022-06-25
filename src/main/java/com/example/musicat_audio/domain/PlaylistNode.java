@@ -2,6 +2,7 @@ package com.example.musicat_audio.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +24,8 @@ public class PlaylistNode {
     @JoinColumn(name = "playlist_key", nullable = false)
     private Playlist playlistKey;
 
-    @JsonBackReference
+    //@JsonBackReference
+    @JsonManagedReference
     @ManyToOne(optional = false)
     @JoinColumn(name = "music_no", nullable = false)
     private Music musicNo;

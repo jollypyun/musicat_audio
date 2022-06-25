@@ -38,7 +38,7 @@ include::{snippets}/findMusicByArticleNo/http-response.adoc[]
 
 include::{snippets}/findMusicByArticleNo/response-body.adoc[]
 
-== 사용자 조회 [get]
+== 게시글 번호로 음악 조회 [get]
 
 게시글 번호로 음악 조회
 
