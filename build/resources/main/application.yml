@@ -1,0 +1,42 @@
+server:
+  port: 20000
+
+spring:
+  datasource:
+    url: jdbc:mysql://13.124.245.202:3306/musicat_audio?characterEncoding=UTF-8&serverTimezone=UTC
+    username: scott
+    password: Tiger_1234
+#    url: jdbc:mysql://127.0.0.1:3306/musicat_audio?characterEncoding=UTF-8&serverTimezone=UTC
+#    username: root
+#    password: mymysql
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  mvc:
+    async:
+      request-timeout: 3600000
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+      #location : /upload
+      #location : d:\\temp\\spring_uploaded_files
+    #https://hello-bryan.tistory.com/343
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      #ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true #sysout으로 찍는다
+        format_sql: true
+
+
+file:
+  dir: /upload_audio/
+#  dir: C:\Users\MZC\IdeaProjects\musicat_audio\src\main\resources\static\upload\audio
+
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
+
