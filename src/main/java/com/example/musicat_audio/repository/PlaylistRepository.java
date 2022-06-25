@@ -4,12 +4,9 @@ import com.example.musicat_audio.domain.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.persistence.EntityManager;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 @Slf4j
@@ -71,7 +68,7 @@ public class PlaylistRepository {
             Music music = em.find(Music.class, num);
             PlaylistNode playlistNode = new PlaylistNode();
             playlistNode.setPlaylistKey(playlist);
-            playlistNode.setMusicNo(music);
+            playlistNode.setMusic(music);
             em.persist(playlistNode);
         }
         Playlist newPl = em.find(Playlist.class, playlistKey);
@@ -85,10 +82,10 @@ public class PlaylistRepository {
             Music music = em.find(Music.class, num);
             PlaylistNode playlistNode = new PlaylistNode();
             playlistNode.setPlaylistKey(playlist);
-            playlistNode.setMusicNo(music);
+            playlistNode.setMusic(music);
             log.info("playlistnode : " + playlistNode.getPlaylistKey().getId());
-            log.info("playlistnode : " + playlistNode.getMusicNo().getId());
-            em.createQuery("DELETE FROM PlaylistNode PN WHERE PN.playlistKey = :playlistKey AND PN.musicNo = :musicNo")
+            log.info("playlistnode : " + playlistNode.getMusic().getId());
+            em.createQuery("DELETE FROM PlaylistNode PN WHERE PN.playlistKey = :playlistKey AND PN.music = :musicNo")
                     .setParameter("playlistKey", playlist)
                     .setParameter("musicNo", music)
                     .executeUpdate();
@@ -133,7 +130,7 @@ public class PlaylistRepository {
     // 플레이리스트 상세정보 가져오기
     public List<Music> selectDetailPlaylist(String playlistKey) {
         log.info("key : " + playlistKey);
-        List<Music> playlists = em.createQuery("SELECT PN.musicNo FROM PlaylistNode PN JOIN Playlist P ON P.id = PN.playlistKey.id WHERE P.id = :playlistKey")
+        List<Music> playlists = em.createQuery("SELECT PN.music FROM PlaylistNode PN JOIN Playlist P ON P.id = PN.playlistKey.id WHERE P.id = :playlistKey")
                 .setParameter("playlistKey", playlistKey)
                 .getResultList();
         for(Music p : playlists) {

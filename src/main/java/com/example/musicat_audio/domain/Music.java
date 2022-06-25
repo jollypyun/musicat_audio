@@ -1,7 +1,6 @@
 package com.example.musicat_audio.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -39,7 +38,7 @@ public class Music {
 
     //@JsonManagedReference
     @JsonBackReference
-    @OneToMany(mappedBy = "musicNo", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "music", cascade = CascadeType.REMOVE)
     private List<PlaylistNode> playlistNodes = new ArrayList<>();
 
     public Music(MetaFile file, Thumbnail thumbnail, String title, int memberNo) {
