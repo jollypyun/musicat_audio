@@ -1,0 +1,71 @@
+= REST Service API Guide
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+= Resources
+
+== Person REST Service
+
+The Person provides the entry point into the service.
+
+=== Accessing the person GET with provided content
+
+==== Request structure
+
+== 게시글 번호로 음악 조회 [get]
+
+게시글 번호로 음악 조회
+
+include::{snippets}/findMusicByArticleNo/curl-request.adoc[]
+
+=== 요청 구조
+
+include::{snippets}/findMusicByArticleNo/http-request.adoc[]
+
+==== 요청 파라미터들
+
+include::{snippets}/findMusicByArticleNo/path-parameters.adoc[]
+
+=== 응답 구조
+
+include::{snippets}/findMusicByArticleNo/http-response.adoc[]
+
+==== 응답 파라미터들
+
+include::{snippets}/findMusicByArticleNo/response-body.adoc[]
+
+== 사용자 조회 [get]
+
+게시글 번호로 음악 조회
+
+==== Request structure
+
+== 게시글 번호로 음악 삭제 [delete]
+
+게시글 번호로 음악 삭제
+
+include::{snippets}/deleteMusicByArticleNoTest/curl-request.adoc[]
+
+=== 요청 구조
+
+include::{snippets}/deleteMusicByArticleNoTest/http-request.adoc[]
+
+==== 요청 파라미터들
+
+include::{snippets}/deleteMusicByArticleNoTest/path-parameters.adoc[]
+
+=== 응답 구조
+
+include::{snippets}/deleteMusicByArticleNoTest/http-response.adoc[]
+
+==== 응답 파라미터들
+
+include::{snippets}/deleteMusicByArticleNoTest/response-body.adoc[]
+
+== 게시글 번호로 음악 삭제 [delete]
+
+게시글 번호로 음악 조회

@@ -215,7 +215,7 @@
 						</goals>
 						<configuration>
 							<outputDirectory>
-								${project.build.directory}/static/docs
+								${project.build.outputDirectory}/static/docs
 							</outputDirectory>
 							<resources>
 								<resource>
